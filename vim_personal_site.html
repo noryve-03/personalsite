@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freeman -- Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1a1a1a;
+            color: #c0c0c0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            color: #00ff00;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .section.active {
+            opacity: 1;
+        }
+
+        .section h2 {
+            color: #00ffff;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid #00ffff;
+            padding-left: 0.5rem;
+        }
+
+        .section p, .section li { margin-bottom: 0.5rem;
+        }
+
+        .section ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .section li:before {
+            content: "→ ";
+            color: #00ff00;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .navigation:hover {
+            opacity: 1;
+        }
+
+        .navigation div {
+            margin: 2px 0;
+        }
+
+        .command-line {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #000;
+            color: #00ff00;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            display: none;
+            border-top: 1px solid #333;
+        }
+
+        .command-line.active {
+            display: block;
+        }
+
+        .command-input {
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-family: inherit;
+            font-size: inherit;
+            outline: none;
+            width: 100%;
+        }
+
+        .highlight {
+            background: #333;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        .link {
+            color: #00ffff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #333;
+            color: #00ff00;
+            padding: 5px 20px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .status-bar.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .navigation {
+                position: static;
+                margin-top: 2rem;
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar" id="statusBar">
+        NORMAL MODE | Press ? for help
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Noryve Freeman</h1>
+            <div class="subtitle">I build things and love configs</div>
+        </div>
+
+        <div class="section active" id="about">
+            <h2>About</h2>
+	    I am a student at <a href="https://www.yale.edu" class="link" target="_blank">Yale University</a>, studying Computer Science and Energy studies. I believe in <a href="https://www.lesswrong.com/posts/Wg6ptgi2DupFuAnXG/orienting-toward-wizard-power" class="link"> "orienting towards wizard power," </a> <a href="https://paulgraham.com/identity.html" class="link"> "keeping my identity small,"</a> and <a href="https://www.benkuhn.net/abyss/" class="link"> "staring into the abyss as a core life skill."</a><br>
+	    I am currently building a robotics company. <br> 
+	    I am a big fan of <a href="https://neovim.io" class="link" target="_blank">Neovim</a>, <a href="https://github.com/tmux/tmux/wiki" class="link">tmux<a/> , <a href="https://ohmyz.sh/" class="link"> and oh-my-zsh. </a>  
+
+	</div>
+
+
+    <div class="navigation" id="navigation">
+        <div><strong>Vim Keys:</strong></div>
+        <div>j/k - scroll</div>
+        <div>g/G - top/bottom</div>
+        <div>/ - search</div>
+        <div>n - next section</div>
+        <div>p - prev section</div>
+        <div>? - help</div>
+    </div>
+
+    <div class="command-line" id="commandLine">
+        <span>:</span><input type="text" class="command-input" id="commandInput" placeholder="Enter command">
+    </div>
+
+    <script>
+        // Vim-inspired functionality
+        class VimSite {
+            constructor() {
+                this.mode = 'normal';
+                this.sections = ['about', 'projects', 'skills', 'contact'];
+                this.currentSection = 0;
+                this.searchTerm = '';
+                this.scrollSpeed = 50;
+                
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.updateActiveSection();
+                this.showStatus('NORMAL MODE | Press ? for help');
+            }
+
+            bindEvents() {
+                document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+                document.getElementById('commandInput').addEventListener('keydown', (e) => this.handleCommandInput(e));
+                document.addEventListener('scroll', () => this.throttle(this.updateActiveSection.bind(this), 100));
+            }
+
+            handleKeyPress(e) {
+                if (this.mode === 'command') return;
+                
+                switch(e.key) {
+                    case 'j':
+                        e.preventDefault();
+                        this.scrollDown();
+                        break;
+                    case 'k':
+                        e.preventDefault();
+                        this.scrollUp();
+                        break;
+                    case 'g':
+                        e.preventDefault();
+                        this.scrollToTop();
+                        break;
+                    case 'G':
+                        e.preventDefault();
+                        this.scrollToBottom();
+                        break;
+                    case '/':
+                        e.preventDefault();
+                        this.enterSearchMode();
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        this.nextSection();
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        this.prevSection();
+                        break;
+                    case ':':
+                        e.preventDefault();
+                        this.enterCommandMode();
+                        break;
+                    case '?':
+                        e.preventDefault();
+                        this.showHelp();
+                        break;
+                    case 'Escape':
+                        e.preventDefault();
+                        this.exitMode();
+                        break;
+                }
+            }
+
+            handleCommandInput(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.executeCommand(e.target.value);
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    this.exitMode();
+                }
+            }
+
+            scrollDown() {
+                window.scrollBy(0, this.scrollSpeed);
+            }
+
+            scrollUp() {
+                window.scrollBy(0, -this.scrollSpeed);
+            }
+
+            scrollToTop() {
+                window.scrollTo(0, 0);
+                this.currentSection = 0;
+                this.updateActiveSection();
+            }
+
+            scrollToBottom() {
+                window.scrollTo(0, document.body.scrollHeight);
+                this.currentSection = this.sections.length - 1;
+                this.updateActiveSection();
+            }
+
+            nextSection() {
+                this.currentSection = Math.min(this.currentSection + 1, this.sections.length - 1);
+                this.scrollToSection(this.currentSection);
+            }
+
+            prevSection() {
+                this.currentSection = Math.max(this.currentSection - 1, 0);
+                this.scrollToSection(this.currentSection);
+            }
+
+            scrollToSection(index) {
+                const section = document.getElementById(this.sections[index]);
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            enterSearchMode() {
+                this.mode = 'search';
+                this.showCommandLine();
+                document.getElementById('commandInput').placeholder = 'Search...';
+                document.getElementById('commandInput').focus();
+                this.showStatus('SEARCH MODE | Type to search, Enter to find, Esc to exit');
+            }
+
+            enterCommandMode() {
+                this.mode = 'command';
+                this.showCommandLine();
+                document.getElementById('commandInput').placeholder = 'Enter command';
+                document.getElementById('commandInput').focus();
+                this.showStatus('COMMAND MODE | Type command, Enter to execute, Esc to exit');
+            }
+
+            executeCommand(command) {
+                const cmd = command.trim().toLowerCase();
+                
+                switch(cmd) {
+                    case 'about':
+                    case 'a':
+                        this.goToSection('about');
+                        break;
+                    case 'projects':
+                    case 'p':
+                        this.goToSection('projects');
+                        break;
+                    case 'skills':
+                    case 's':
+                        this.goToSection('skills');
+                        break;
+                    case 'contact':
+                    case 'c':
+                        this.goToSection('contact');
+                        break;
+                    case 'help':
+                    case 'h':
+                        this.showHelp();
+                        break;
+                    case 'top':
+                        this.scrollToTop();
+                        break;
+                    case 'bottom':
+                        this.scrollToBottom();
+                        break;
+                    default:
+                        if (this.mode === 'search') {
+                            this.search(command);
+                        } else {
+                            this.showStatus(`Unknown command: ${command}`);
+                        }
+                }
+                
+                this.exitMode();
+            }
+
+            goToSection(sectionName) {
+                const index = this.sections.indexOf(sectionName);
+                if (index !== -1) {
+                    this.currentSection = index;
+                    this.scrollToSection(index);
+                }
+            }
+
+            search(term) {
+                if (!term) return;
+                
+                const content = document.body.textContent.toLowerCase();
+                const termIndex = content.indexOf(term.toLowerCase());
+                
+                if (termIndex !== -1) {
+                    // Simple search highlight (basic implementation)
+                    this.showStatus(`Found: "${term}"`);
+                    // In a real implementation, you'd highlight the found text
+                } else {
+                    this.showStatus(`Not found: "${term}"`);
+                }
+            }
+
+            showHelp() {
+                this.showStatus('j/k:scroll | g/G:top/bottom | n/p:next/prev section | /:search | ::command | ?:help | Esc:exit');
+            }
+
+            exitMode() {
+                this.mode = 'normal';
+                this.hideCommandLine();
+                this.showStatus('NORMAL MODE | Press ? for help');
+            }
+
+            showCommandLine() {
+                document.getElementById('commandLine').classList.add('active');
+                document.getElementById('commandInput').value = '';
+            }
+
+            hideCommandLine() {
+                document.getElementById('commandLine').classList.remove('active');
+            }
+
+            showStatus(message) {
+                const statusBar = document.getElementById('statusBar');
+                statusBar.textContent = message;
+                statusBar.classList.add('active');
+                
+                // Auto-hide after 3 seconds
+                setTimeout(() => {
+                    if (statusBar.textContent === message) {
+                        statusBar.classList.remove('active');
+                    }
+                }, 3000);
+            }
+
+            updateActiveSection() {
+                const sections = this.sections.map(id => document.getElementById(id));
+                const scrollPos = window.scrollY + 100;
+                
+                sections.forEach((section, index) => {
+                    section.classList.remove('active');
+                    if (section.offsetTop <= scrollPos && 
+                        section.offsetTop + section.offsetHeight > scrollPos) {
+                        section.classList.add('active');
+                        this.currentSection = index;
+                    }
+                });
+                
+                // Ensure at least one section is active
+                if (!document.querySelector('.section.active')) {
+                    sections[0].classList.add('active');
+                }
+            }
+
+            throttle(func, limit) {
+                let inThrottle;
+                return function() {
+                    const args = arguments;
+                    const context = this;
+                    if (!inThrottle) {
+                        func.apply(context, args);
+                        inThrottle = true;
+                        setTimeout(() => inThrottle = false, limit);
+                    }
+                }
+            }
+        }
+
+        // Utility functions
+        function openLink(url) {
+            window.open(url, '_blank');
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => new VimSite());
+        } else {
+            new VimSite();
+        }
+    </script>
+</body>
+</html>
