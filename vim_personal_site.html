@@ -60,7 +60,8 @@
             padding-left: 0.5rem;
         }
 
-        .section p, .section li { margin-bottom: 0.5rem;
+        .section p, .section li {
+            margin-bottom: 0.5rem;
         }
 
         .section ul {
@@ -163,6 +164,16 @@
                 opacity: 1;
             }
         }
+
+        .search-highlight {
+            background-color: #d7a600;
+            color: #000;
+            border-radius: 3px;
+        }
+
+        .search-highlight.current {
+            background-color: #ff0000;
+        }
     </style>
 </head>
 <body>
@@ -178,19 +189,17 @@
 
         <div class="section active" id="about">
             <h2>About</h2>
-	    I am a student at <a href="https://www.yale.edu" class="link" target="_blank">Yale University</a>, studying Computer Science and Energy studies. I believe in <a href="https://www.lesswrong.com/posts/Wg6ptgi2DupFuAnXG/orienting-toward-wizard-power" class="link"> "orienting towards wizard power," </a> <a href="https://paulgraham.com/identity.html" class="link"> "keeping my identity small,"</a> and <a href="https://www.benkuhn.net/abyss/" class="link"> "staring into the abyss as a core life skill."</a><br>
-	    I am currently building a robotics company. <br> 
-	    I am a big fan of <a href="https://neovim.io" class="link" target="_blank">Neovim</a>, <a href="https://github.com/tmux/tmux/wiki" class="link">tmux<a/> , <a href="https://ohmyz.sh/" class="link"> and oh-my-zsh. </a>  
+            I am a student at <a href="https://www.yale.edu" class="link" target="_blank">Yale University</a>, studying Computer Science and Energy studies. I believe in <a href="https://www.lesswrong.com/posts/Wg6ptgi2DupFuAnXG/orienting-toward-wizard-power" class="link"> "orienting towards wizard power," </a> <a href="https://paulgraham.com/identity.html" class="link"> "keeping my identity small,"</a> and <a href="https://www.benkuhn.net/abyss/" class="link"> "staring into the abyss as a core life skill."</a><br>
+            I am currently building a robotics company. <br> 
+            I am a big fan of <a href="https://neovim.io" class="link" target="_blank">Neovim</a>, <a href="https://github.com/tmux/tmux/wiki" class="link">tmux</a>, <a href="https://ohmyz.sh/" class="link"> and oh-my-zsh. </a>  
+        </div>
 
-	</div>
-
-
-    <div class="navigation" id="navigation">
+       <div class="navigation" id="navigation">
         <div><strong>Vim Keys:</strong></div>
         <div>j/k - scroll</div>
         <div>g/G - top/bottom</div>
         <div>/ - search</div>
-        <div>n - next section</div>
+        <div>n - next section/match</div>
         <div>p - prev section</div>
         <div>? - help</div>
     </div>
@@ -207,6 +216,8 @@
                 this.sections = ['about', 'projects', 'skills', 'contact'];
                 this.currentSection = 0;
                 this.searchTerm = '';
+                this.searchMatches = [];
+                this.currentMatchIndex = -1;
                 this.scrollSpeed = 50;
                 
                 this.init();
@@ -225,7 +236,7 @@
             }
 
             handleKeyPress(e) {
-                if (this.mode === 'command') return;
+                if (this.mode === 'command' || this.mode === 'search') return;
                 
                 switch(e.key) {
                     case 'j':
@@ -250,7 +261,11 @@
                         break;
                     case 'n':
                         e.preventDefault();
-                        this.nextSection();
+                        if (this.searchMatches.length > 0) {
+                            this.nextMatch();
+                        } else {
+                            this.nextSection();
+                        }
                         break;
                     case 'p':
                         e.preventDefault();
@@ -337,6 +352,11 @@
             executeCommand(command) {
                 const cmd = command.trim().toLowerCase();
                 
+                if (this.mode === 'search') {
+                    this.search(cmd);
+                    return;
+                }
+                
                 switch(cmd) {
                     case 'about':
                     case 'a':
@@ -365,11 +385,7 @@
                         this.scrollToBottom();
                         break;
                     default:
-                        if (this.mode === 'search') {
-                            this.search(command);
-                        } else {
-                            this.showStatus(`Unknown command: ${command}`);
-                        }
+                        this.showStatus(`Unknown command: ${command}`);
                 }
                 
                 this.exitMode();
@@ -384,18 +400,95 @@
             }
 
             search(term) {
-                if (!term) return;
-                
-                const content = document.body.textContent.toLowerCase();
-                const termIndex = content.indexOf(term.toLowerCase());
-                
-                if (termIndex !== -1) {
-                    // Simple search highlight (basic implementation)
-                    this.showStatus(`Found: "${term}"`);
-                    // In a real implementation, you'd highlight the found text
-                } else {
-                    this.showStatus(`Not found: "${term}"`);
+                if (!term || !term.trim()) {
+                    this.searchTerm = '';
+                    this.clearSearch();
+                    this.exitMode();
+                    return;
                 }
+
+                this.clearSearch(); // Clear previous search
+                this.searchTerm = term;
+                const searchArea = document.querySelector('.container');
+                const regex = new RegExp(this.escapeRegex(term), 'gi');
+
+                const walkAndReplace = (node) => {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        const text = node.textContent;
+                        const matches = [...text.matchAll(regex)];
+                        if (matches.length > 0) {
+                            const fragment = document.createDocumentFragment();
+                            let lastIndex = 0;
+                            matches.forEach(match => {
+                                if (match.index > lastIndex) {
+                                    fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+                                }
+                                const highlightSpan = document.createElement('span');
+                                highlightSpan.className = 'search-highlight';
+                                highlightSpan.textContent = match[0];
+                                fragment.appendChild(highlightSpan);
+                                lastIndex = match.index + match[0].length;
+                            });
+                            if (lastIndex < text.length) {
+                                fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+                            }
+                            node.parentNode.replaceChild(fragment, node);
+                        }
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        // Process child nodes
+                        const children = [...node.childNodes];
+                        children.forEach(child => walkAndReplace(child));
+                    }
+                };
+
+                walkAndReplace(searchArea);
+                this.searchMatches = [...searchArea.querySelectorAll('.search-highlight')];
+
+                if (this.searchMatches.length > 0) {
+                    this.showStatus(`${this.searchMatches.length} matches found for: "${term}"`);
+                    this.currentMatchIndex = -1;
+                    this.nextMatch(); // Go to first match
+                } else {
+                    this.showStatus(`No matches found for: "${term}"`);
+                }
+                
+                this.exitMode();
+            }
+
+            clearSearch() {
+                const highlights = document.querySelectorAll('.search-highlight');
+                highlights.forEach(el => {
+                    const parent = el.parentNode;
+                    if (parent) {
+                        parent.replaceChild(document.createTextNode(el.textContent), el);
+                        parent.normalize();
+                    }
+                });
+                this.searchMatches = [];
+                this.currentMatchIndex = -1;
+            }
+
+            nextMatch() {
+                if (this.searchMatches.length === 0) return;
+
+                if (this.currentMatchIndex >= 0) {
+                    this.searchMatches[this.currentMatchIndex].classList.remove('current');
+                }
+                this.currentMatchIndex = (this.currentMatchIndex + 1) % this.searchMatches.length;
+                this.highlightCurrentMatch();
+            }
+
+            highlightCurrentMatch() {
+                if (this.currentMatchIndex >= 0 && this.currentMatchIndex < this.searchMatches.length) {
+                    const currentMatch = this.searchMatches[this.currentMatchIndex];
+                    currentMatch.classList.add('current');
+                    currentMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    this.showStatus(`Match ${this.currentMatchIndex + 1} of ${this.searchMatches.length}`);
+                }
+            }
+
+            escapeRegex(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             }
 
             showHelp() {
@@ -461,11 +554,6 @@
                     }
                 }
             }
-        }
-
-        // Utility functions
-        function openLink(url) {
-            window.open(url, '_blank');
         }
 
         // Initialize when DOM is ready
