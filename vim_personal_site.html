@@ -214,6 +214,39 @@
         .search-highlight.current {
             background-color: #ff0000;
         }
+
+        .cursor {
+            position: absolute;
+            width: 8px;
+            height: 20px;
+            background-color: #00ff00;
+            border: 1px solid #00ff00;
+            z-index: 1000;
+            pointer-events: none;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .cursor.solid {
+            animation: none;
+            opacity: 1;
+        }
+
+        .cursor-hover-link {
+            background-color: #004400 !important;
+            border: 1px solid #00ff00 !important;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5) !important;
+        }
+
+        .cursor-hover-tab {
+            background-color: #004466 !important;
+            border: 1px solid #00ffff !important;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5) !important;
+        }
     </style>
 </head>
 <body>
@@ -318,7 +351,7 @@
 
     <div class="navigation" id="navigation">
         <div><strong>Vim Keys:</strong></div>
-        <div>j/k - scroll in tab</div>
+        <div>j/k/h/l - move cursor</div>
         <div>n/p - next/prev tab</div>
         <div>/ - search in tab</div>
         <div>: - command mode</div>
@@ -328,6 +361,8 @@
     <div class="command-line" id="commandLine">
         <span>:</span><input type="text" class="command-input" id="commandInput" placeholder="Enter command">
     </div>
+
+    <div class="cursor" id="cursor"></div>
 
     <script>
         // Vim-inspired functionality
@@ -341,19 +376,30 @@
                 this.currentMatchIndex = -1;
                 this.scrollSpeed = 50;
                 
+                // Cursor position tracking
+                this.cursorX = 0;
+                this.cursorY = 0;
+                this.lineHeight = 20;
+                this.charWidth = 8;
+                this.cursor = null;
+                
                 this.init();
             }
 
             init() {
+                this.cursor = document.getElementById('cursor');
                 this.bindEvents();
                 this.bindTabEvents();
                 this.showTab('about');
+                this.initializeCursor();
                 this.showStatus('NORMAL MODE | Press ? for help');
             }
 
             bindEvents() {
                 document.addEventListener('keydown', (e) => this.handleKeyPress(e));
                 document.getElementById('commandInput').addEventListener('keydown', (e) => this.handleCommandInput(e));
+                window.addEventListener('resize', () => this.updateCursorPosition());
+                window.addEventListener('scroll', () => this.updateCursorPosition());
             }
 
             bindTabEvents() {
@@ -389,6 +435,9 @@
                 
                 // Reset scroll position to top of tab
                 window.scrollTo(0, 0);
+                
+                // Position cursor at first text character in new tab
+                this.positionCursorAtFirstText();
             }
 
             handleKeyPress(e) {
@@ -397,11 +446,19 @@
                 switch(e.key) {
                     case 'j':
                         e.preventDefault();
-                        this.scrollDown();
+                        this.moveCursorDown();
                         break;
                     case 'k':
                         e.preventDefault();
-                        this.scrollUp();
+                        this.moveCursorUp();
+                        break;
+                    case 'h':
+                        e.preventDefault();
+                        this.moveCursorLeft();
+                        break;
+                    case 'l':
+                        e.preventDefault();
+                        this.moveCursorRight();
                         break;
                     case 'g':
                         e.preventDefault();
@@ -434,6 +491,10 @@
                     case '?':
                         e.preventDefault();
                         this.showHelp();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        this.handleEnterPress();
                         break;
                     case 'Escape':
                         e.preventDefault();
@@ -472,6 +533,162 @@
                 this.updateActiveSection();
             }
 
+            initializeCursor() {
+                // Position cursor at the first text character
+                this.positionCursorAtFirstText();
+            }
+
+            updateCursorPosition() {
+                const container = document.querySelector('.container');
+                const containerRect = container.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                this.cursor.style.left = (containerRect.left + this.cursorX * this.charWidth) + 'px';
+                this.cursor.style.top = (containerRect.top + scrollTop + this.cursorY * this.lineHeight) + 'px';
+                
+                // Check for hover states after position update
+                setTimeout(() => this.updateCursorHover(), 0);
+            }
+
+            moveCursorUp() {
+                this.cursorY = Math.max(0, this.cursorY - 1);
+                this.updateCursorPosition();
+            }
+
+            moveCursorDown() {
+                this.cursorY++;
+                this.updateCursorPosition();
+            }
+
+            moveCursorLeft() {
+                this.cursorX = Math.max(0, this.cursorX - 1);
+                this.updateCursorPosition();
+            }
+
+            moveCursorRight() {
+                this.cursorX++;
+                this.updateCursorPosition();
+            }
+
+            getElementAtCursor() {
+                const cursorRect = this.cursor.getBoundingClientRect();
+                const centerX = cursorRect.left + cursorRect.width / 2;
+                const centerY = cursorRect.top + cursorRect.height / 2;
+                
+                // Temporarily hide cursor to get element beneath it
+                this.cursor.style.display = 'none';
+                const element = document.elementFromPoint(centerX, centerY);
+                this.cursor.style.display = 'block';
+                
+                return element;
+            }
+
+            isOverLink() {
+                const element = this.getElementAtCursor();
+                return element && (element.tagName === 'A' || element.closest('a'));
+            }
+
+            isOverTab() {
+                const element = this.getElementAtCursor();
+                return element && (element.classList.contains('tab') || element.closest('.tab'));
+            }
+
+            handleEnterPress() {
+                if (this.isOverLink()) {
+                    this.openLinkAtCursor();
+                } else if (this.isOverTab()) {
+                    this.switchToTabAtCursor();
+                }
+            }
+
+            openLinkAtCursor() {
+                const element = this.getElementAtCursor();
+                const link = element.tagName === 'A' ? element : element.closest('a');
+                if (link && link.href) {
+                    window.open(link.href, '_blank');
+                    this.showStatus(`Opened link: ${link.href}`);
+                }
+            }
+
+            switchToTabAtCursor() {
+                const element = this.getElementAtCursor();
+                const tab = element.classList.contains('tab') ? element : element.closest('.tab');
+                if (tab && tab.dataset.tab) {
+                    this.showTab(tab.dataset.tab);
+                    this.showStatus(`Switched to tab: ${tab.dataset.tab}`);
+                }
+            }
+
+            updateCursorHover() {
+                // Clear previous hover states
+                this.cursor.classList.remove('cursor-hover-link', 'cursor-hover-tab');
+                
+                if (this.isOverLink()) {
+                    this.cursor.classList.add('cursor-hover-link');
+                    const element = this.getElementAtCursor();
+                    const link = element.tagName === 'A' ? element : element.closest('a');
+                    const linkText = link.textContent.trim();
+                    const linkUrl = link.href;
+                    this.showStatus(`Link: "${linkText}" - Press Enter to open in new tab`);
+                } else if (this.isOverTab()) {
+                    this.cursor.classList.add('cursor-hover-tab');
+                    const element = this.getElementAtCursor();
+                    const tab = element.classList.contains('tab') ? element : element.closest('.tab');
+                    const tabName = tab.textContent.trim();
+                    this.showStatus(`Tab: "${tabName}" - Press Enter to switch`);
+                } else {
+                    // Clear status if not over interactive element
+                    this.showStatus('NORMAL MODE | Press ? for help');
+                }
+            }
+
+            findFirstTextPosition() {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) return { x: 0, y: 0 };
+
+                // Find the first text node in the active tab
+                const walker = document.createTreeWalker(
+                    activeTab,
+                    NodeFilter.SHOW_TEXT,
+                    {
+                        acceptNode: function(node) {
+                            // Skip empty text nodes and whitespace-only nodes
+                            if (node.nodeValue.trim().length === 0) {
+                                return NodeFilter.FILTER_SKIP;
+                            }
+                            return NodeFilter.FILTER_ACCEPT;
+                        }
+                    },
+                    false
+                );
+
+                const firstTextNode = walker.nextNode();
+                if (!firstTextNode) return { x: 0, y: 0 };
+
+                // Get the position of the first character
+                const range = document.createRange();
+                range.setStart(firstTextNode, 0);
+                range.setEnd(firstTextNode, 1);
+                const rect = range.getBoundingClientRect();
+                
+                const container = document.querySelector('.container');
+                const containerRect = container.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                // Calculate relative position within the container
+                const relativeX = Math.max(0, Math.floor((rect.left - containerRect.left) / this.charWidth));
+                const relativeY = Math.max(0, Math.floor((rect.top - containerRect.top - scrollTop) / this.lineHeight));
+
+                return { x: relativeX, y: relativeY };
+            }
+
+            positionCursorAtFirstText() {
+                const position = this.findFirstTextPosition();
+                this.cursorX = position.x;
+                this.cursorY = position.y;
+                this.updateCursorPosition();
+            }
+
             nextSection() {
                 this.currentSection = (this.currentSection + 1) % this.sections.length;
                 this.showTab(this.sections[this.currentSection]);
@@ -489,6 +706,7 @@
 
             enterSearchMode() {
                 this.mode = 'search';
+                this.cursor.style.display = 'none';
                 this.showCommandLine();
                 document.getElementById('commandInput').placeholder = 'Search...';
                 document.getElementById('commandInput').focus();
@@ -497,6 +715,7 @@
 
             enterCommandMode() {
                 this.mode = 'command';
+                this.cursor.style.display = 'none';
                 this.showCommandLine();
                 document.getElementById('commandInput').placeholder = 'Enter command';
                 document.getElementById('commandInput').focus();
@@ -652,8 +871,9 @@
 
             exitMode() {
                 this.mode = 'normal';
+                this.cursor.style.display = 'block';
                 this.hideCommandLine();
-                this.showStatus('NORMAL MODE | Press ? for help');
+                this.updateCursorHover();
             }
 
             showCommandLine() {
