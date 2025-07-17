@@ -42,14 +42,54 @@
             font-size: 1rem;
         }
 
-        .section {
+        .navbar {
+            display: flex;
+            border-bottom: 1px solid #333;
             margin-bottom: 2rem;
-            opacity: 0.9;
-            transition: opacity 0.2s;
+            overflow-x: auto;
         }
 
-        .section.active {
-            opacity: 1;
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: #2a2a2a;
+            color: #888;
+            border: 1px solid #333;
+            border-bottom: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .tab:hover {
+            background: #3a3a3a;
+            color: #c0c0c0;
+        }
+
+        .tab.active {
+            background: #1a1a1a;
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+
+        .tab-content {
+            display: none;
+            min-height: 400px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            margin-bottom: 2rem;
         }
 
         .section h2 {
@@ -187,20 +227,101 @@
             <div class="subtitle">I build things and love configs</div>
         </div>
 
-        <div class="section active" id="about">
-            <h2>About</h2>
-            I am a student at <a href="https://www.yale.edu" class="link" target="_blank">Yale University</a>, studying Computer Science and Energy studies. I believe in <a href="https://www.lesswrong.com/posts/Wg6ptgi2DupFuAnXG/orienting-toward-wizard-power" class="link"> "orienting towards wizard power," </a> <a href="https://paulgraham.com/identity.html" class="link"> "keeping my identity small,"</a> and <a href="https://www.benkuhn.net/abyss/" class="link"> "staring into the abyss as a core life skill."</a><br>
-            I am currently building a robotics company. <br> 
-            I am a big fan of <a href="https://neovim.io" class="link" target="_blank">Neovim</a>, <a href="https://github.com/tmux/tmux/wiki" class="link">tmux</a>, <a href="https://ohmyz.sh/" class="link"> and oh-my-zsh. </a>  
+        <div class="navbar">
+            <div class="tab active" data-tab="about">About</div>
+            <div class="tab" data-tab="blog">Blog</div>
+            <div class="tab" data-tab="books">Books</div>
+            <div class="tab" data-tab="awesome-links">Awesome Links</div>
         </div>
 
-       <div class="navigation" id="navigation">
+        <div class="tab-content active" id="about">
+            <div class="section">
+                <h2>About</h2>
+                I am a student at <a href="https://www.yale.edu" class="link" target="_blank">Yale University</a>, studying Computer Science and Energy studies. I believe in <a href="https://www.lesswrong.com/posts/Wg6ptgi2DupFuAnXG/orienting-toward-wizard-power" class="link"> "orienting towards wizard power," </a> <a href="https://paulgraham.com/identity.html" class="link"> "keeping my identity small,"</a> and <a href="https://www.benkuhn.net/abyss/" class="link"> "staring into the abyss as a core life skill."</a><br>
+                I am currently building a robotics company. <br> 
+                I am a big fan of <a href="https://neovim.io" class="link" target="_blank">Neovim</a>, <a href="https://github.com/tmux/tmux/wiki" class="link">tmux</a>, <a href="https://ohmyz.sh/" class="link"> and oh-my-zsh. </a>
+                <br><br>
+                <p>Contact me:</p>
+                <ul>
+                    <li>freemanirabaruta@gmail.com</li>
+                    <li>LinkedIn: /in/freeman-irabaruta-7213981a0/</li>
+                    <li>GitHub: /noryve-03</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content" id="blog">
+            <div class="section">
+                <h2>Blog</h2>
+                <p>Recent thoughts and writings:</p>
+                <ul>
+                    <li><a href="#" class="link">The Future of Robotics in Education</a> - Exploring how automation can transform learning</li>
+                    <li><a href="#" class="link">Vim Workflows for Productivity</a> - My daily development setup and tricks</li>
+                    <li><a href="#" class="link">Building at Yale</a> - Reflections on student entrepreneurship</li>
+                    <li><a href="#" class="link">Energy and Computing</a> - The intersection of my two fields of study</li>
+                    <li><a href="#" class="link">Terminal Aesthetics</a> - Why I spend so much time on my dotfiles</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content" id="books">
+            <div class="section">
+                <h2>Books</h2>
+                <p>Books I read in 2025</p>
+                <ul>
+                    <li><a href="https://www.goodreads.com/book/show/12857" class="link" target="_blank">The Gambler</a> - Fyodor Dostoevsky</li>
+                    <li><a href="https://www.goodreads.com/book/show/39330937" class="link" target="_blank">Laws of Human Nature</a> - Robert Greene</li>
+                    <li><a href="https://www.goodreads.com/book/show/213034913" class="link" target="_blank">Bill Gates – Source Code</a> - Bill Gates</li>
+                    <li><a href="https://www.goodreads.com/book/show/230863846" class="link" target="_blank">God Money</a> - Dean Patrick</li>
+                    <li><a href="https://www.goodreads.com/book/show/10046142" class="link" target="_blank">Dancing in the Glory of Monsters</a> - Jason Stearns</li>
+                    <li><a href="https://www.goodreads.com/book/show/12158480-why-nations-fail" class="link" target="_blank">Why Nations Fail</a> - Daron Acemoglu</li>
+                    <li><a href="https://www.goodreads.com/book/show/10569.On_Writing" class="link" target="_blank">On Writing</a> - Stephen King</li>
+                    <li><a href="https://www.goodreads.com/book/show/43062156" class="link" target="_blank">All the Wrong Moves</a> - Sasha Chapin</li>
+                    <li><a href="https://www.goodreads.com/book/show/7936425" class="link" target="_blank">More Money Than God</a> - Sebastian Mallaby</li>
+                    <li><a href="https://www.goodreads.com/book/show/199798270" class="link" target="_blank">UnitX</a></li>
+                    <li><a href="https://www.goodreads.com/book/show/58009109" class="link" target="_blank">The Power Law</a> - Sebastian Mallaby</li>
+                    <li><a href="https://www.goodreads.com/book/show/41793" class="link" target="_blank">Hackers and Painters</a> - Paul Graham</li>
+                    <li><a href="https://www.goodreads.com/book/show/98233.Founders_at_Work" class="link" target="_blank">Founders at Work</a> - Jessica Livingston</li>
+                    <li><a href="https://www.goodreads.com/book/show/149105520" class="link" target="_blank">Going Infinite</a> - Michael Lewis</li>
+                    <li><a href="https://www.goodreads.com/book/show/11383199" class="link" target="_blank">Cracking the Sky</a> - Desmond Prout-Johnes</li>
+                    <li><a href="https://www.goodreads.com/book/show/204236707" class="link" target="_blank">On the Edge</a> - Nate Silver</li>
+                    <li><a href="https://www.goodreads.com/book/show/61331847" class="link" target="_blank">Silicon Valley Porn Star</a> - Jason Portnoy</li>
+                    <li><a href="https://www.goodreads.com/book/show/15750692" class="link" target="_blank">Malice</a> - John Gwynne</li>
+                </ul>
+                <p>Currently reading or not finished:</p>
+                <ul>
+                    <li><a href="https://www.goodreads.com/book/show/86058.Master_of_the_Senate" class="link" target="_blank">Master of the Senate</a> - Robert Caro</li>
+                    <li><a href="https://www.goodreads.com/book/show/656.Anna_Karenina" class="link" target="_blank">Anna Karenina</a> - Leo Tolstoy</li>
+                    <li><a href="https://www.goodreads.com/book/show/10483171-the-beginning-of-infinity" class="link" target="_blank">The Beginning of Infinity</a> - David Deutsch</li>
+                    <li><a href="https://www.goodreads.com/book/show/130507.Orthodoxy" class="link" target="_blank">Orthodoxy</a> - G.K. Chesterton</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content" id="awesome-links">
+            <div class="section">
+                <h2>Awesome Links</h2>
+                <p>Resources, tools, and sites I find valuable:</p>
+                <ul>
+                    <li><a href="https://hacker-tools.github.io/" class="link" target="_blank">MIT Missing Semester</a> - Essential tools for computer science</li>
+                    <li><a href="https://www.lesswrong.com/" class="link" target="_blank">LessWrong</a> - Rationality and effective thinking</li>
+                    <li><a href="https://www.gwern.net/" class="link" target="_blank">Gwern.net</a> - Deep dives into fascinating topics</li>
+                    <li><a href="https://waitbutwhy.com/" class="link" target="_blank">Wait But Why</a> - Long-form explanations of complex topics</li>
+                    <li><a href="https://vimawesome.com/" class="link" target="_blank">Vim Awesome</a> - Best Vim plugins and resources</li>
+                    <li><a href="https://github.com/awesome-lists/awesome" class="link" target="_blank">Awesome Lists</a> - Curated lists of everything</li>
+                    <li><a href="https://lobste.rs/" class="link" target="_blank">Lobsters</a> - High-quality programming discussion</li>
+                    <li><a href="https://www.marginalia.nu/" class="link" target="_blank">Marginalia Search</a> - Independent search engine</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation" id="navigation">
         <div><strong>Vim Keys:</strong></div>
-        <div>j/k - scroll</div>
-        <div>g/G - top/bottom</div>
-        <div>/ - search</div>
-        <div>n - next section/match</div>
-        <div>p - prev section</div>
+        <div>j/k - scroll in tab</div>
+        <div>n/p - next/prev tab</div>
+        <div>/ - search in tab</div>
+        <div>: - command mode</div>
         <div>? - help</div>
     </div>
 
@@ -213,7 +334,7 @@
         class VimSite {
             constructor() {
                 this.mode = 'normal';
-                this.sections = ['about', 'projects', 'skills', 'contact'];
+                this.sections = ['about', 'blog', 'books', 'awesome-links'];
                 this.currentSection = 0;
                 this.searchTerm = '';
                 this.searchMatches = [];
@@ -225,14 +346,49 @@
 
             init() {
                 this.bindEvents();
-                this.updateActiveSection();
+                this.bindTabEvents();
+                this.showTab('about');
                 this.showStatus('NORMAL MODE | Press ? for help');
             }
 
             bindEvents() {
                 document.addEventListener('keydown', (e) => this.handleKeyPress(e));
                 document.getElementById('commandInput').addEventListener('keydown', (e) => this.handleCommandInput(e));
-                document.addEventListener('scroll', () => this.throttle(this.updateActiveSection.bind(this), 100));
+            }
+
+            bindTabEvents() {
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        this.showTab(e.target.dataset.tab);
+                    });
+                });
+            }
+
+            showTab(tabName) {
+                // Update current section index
+                this.currentSection = this.sections.indexOf(tabName);
+                
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Show selected tab content
+                document.getElementById(tabName).classList.add('active');
+                
+                // Add active class to selected tab
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                
+                // Clear any existing search highlights
+                this.clearSearch();
+                
+                // Reset scroll position to top of tab
+                window.scrollTo(0, 0);
             }
 
             handleKeyPress(e) {
@@ -317,20 +473,18 @@
             }
 
             nextSection() {
-                this.currentSection = Math.min(this.currentSection + 1, this.sections.length - 1);
-                this.scrollToSection(this.currentSection);
+                this.currentSection = (this.currentSection + 1) % this.sections.length;
+                this.showTab(this.sections[this.currentSection]);
             }
 
             prevSection() {
-                this.currentSection = Math.max(this.currentSection - 1, 0);
-                this.scrollToSection(this.currentSection);
+                this.currentSection = (this.currentSection - 1 + this.sections.length) % this.sections.length;
+                this.showTab(this.sections[this.currentSection]);
             }
 
             scrollToSection(index) {
-                const section = document.getElementById(this.sections[index]);
-                if (section) {
-                    section.scrollIntoView({ behavior: 'smooth' });
-                }
+                // Not needed for tabs - using showTab instead
+                this.showTab(this.sections[index]);
             }
 
             enterSearchMode() {
@@ -362,17 +516,18 @@
                     case 'a':
                         this.goToSection('about');
                         break;
-                    case 'projects':
-                    case 'p':
-                        this.goToSection('projects');
+                    case 'blog':
+                    case 'b':
+                        this.goToSection('blog');
                         break;
-                    case 'skills':
-                    case 's':
-                        this.goToSection('skills');
+                    case 'books':
+                    case 'bk':
+                        this.goToSection('books');
                         break;
-                    case 'contact':
-                    case 'c':
-                        this.goToSection('contact');
+                    case 'awesome-links':
+                    case 'links':
+                    case 'l':
+                        this.goToSection('awesome-links');
                         break;
                     case 'help':
                     case 'h':
@@ -395,7 +550,7 @@
                 const index = this.sections.indexOf(sectionName);
                 if (index !== -1) {
                     this.currentSection = index;
-                    this.scrollToSection(index);
+                    this.showTab(sectionName);
                 }
             }
 
@@ -409,7 +564,7 @@
 
                 this.clearSearch(); // Clear previous search
                 this.searchTerm = term;
-                const searchArea = document.querySelector('.container');
+                const activeTab = document.querySelector('.tab-content.active');
                 const regex = new RegExp(this.escapeRegex(term), 'gi');
 
                 const walkAndReplace = (node) => {
@@ -441,8 +596,8 @@
                     }
                 };
 
-                walkAndReplace(searchArea);
-                this.searchMatches = [...searchArea.querySelectorAll('.search-highlight')];
+                walkAndReplace(activeTab);
+                this.searchMatches = [...activeTab.querySelectorAll('.search-highlight')];
 
                 if (this.searchMatches.length > 0) {
                     this.showStatus(`${this.searchMatches.length} matches found for: "${term}"`);
@@ -492,7 +647,7 @@
             }
 
             showHelp() {
-                this.showStatus('j/k:scroll | g/G:top/bottom | n/p:next/prev section | /:search | ::command | ?:help | Esc:exit');
+                this.showStatus('Commands: a/about | b/blog | bk/books | l/links | Keys: j/k/n/p/:/? | Click tabs | Esc:exit');
             }
 
             exitMode() {
@@ -521,25 +676,6 @@
                         statusBar.classList.remove('active');
                     }
                 }, 3000);
-            }
-
-            updateActiveSection() {
-                const sections = this.sections.map(id => document.getElementById(id));
-                const scrollPos = window.scrollY + 100;
-                
-                sections.forEach((section, index) => {
-                    section.classList.remove('active');
-                    if (section.offsetTop <= scrollPos && 
-                        section.offsetTop + section.offsetHeight > scrollPos) {
-                        section.classList.add('active');
-                        this.currentSection = index;
-                    }
-                });
-                
-                // Ensure at least one section is active
-                if (!document.querySelector('.section.active')) {
-                    sections[0].classList.add('active');
-                }
             }
 
             throttle(func, limit) {
