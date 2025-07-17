@@ -100,6 +100,15 @@
             padding-left: 0.5rem;
         }
 
+        .section h3 {
+            color: #00ff00;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            margin-top: 1.5rem;
+            border-left: 2px solid #00ff00;
+            padding-left: 0.5rem;
+        }
+
         .section p, .section li {
             margin-bottom: 0.5rem;
         }
@@ -247,6 +256,199 @@
             border: 1px solid #00ffff !important;
             box-shadow: 0 0 5px rgba(0, 255, 255, 0.5) !important;
         }
+
+        .blog-sidebar {
+            position: fixed;
+            top: 0;
+            right: -50%;
+            width: 50%;
+            height: 100vh;
+            background: #1a1a1a;
+            border-left: 1px solid #333;
+            z-index: 2000;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            background: #2a2a2a;
+            padding: 1rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header h3 {
+            color: #00ffff;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .sidebar-btn {
+            background: #333;
+            color: #c0c0c0;
+            border: 1px solid #555;
+            padding: 0.3rem 0.8rem;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-btn:hover {
+            background: #555;
+            color: #00ffff;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            color: #c0c0c0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+
+        .sidebar-content h1,
+        .sidebar-content h2,
+        .sidebar-content h3 {
+            color: #00ffff;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-content p {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-content a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+
+        .sidebar-content a:hover {
+            text-decoration: underline;
+        }
+
+        .blog-file-item {
+            cursor: pointer;
+            padding: 0.5rem;
+            margin: 0.2rem 0;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .blog-file-item:hover {
+            background-color: #333;
+        }
+
+        .config-file-item {
+            cursor: pointer;
+            padding: 0.5rem;
+            margin: 0.2rem 0;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .config-file-item:hover {
+            background-color: #333;
+        }
+
+        .container.sidebar-open {
+            margin-right: 50%;
+        }
+
+        .fullscreen-article {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .article-header h1 {
+            color: #00ffff;
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .article-content {
+            line-height: 1.6;
+        }
+
+        .article-content h1,
+        .article-content h2,
+        .article-content h3 {
+            color: #00ffff;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .article-content p {
+            margin-bottom: 1rem;
+        }
+
+        .article-content a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+
+        .article-content a:hover {
+            text-decoration: underline;
+        }
+
+        .article-content pre {
+            background: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 3px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .article-content code {
+            background: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 2px;
+            padding: 0.2rem 0.4rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .article-content pre code {
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        @media (max-width: 768px) {
+            .blog-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .container.sidebar-open {
+                margin-right: 0;
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -265,6 +467,7 @@
             <div class="tab" data-tab="blog">Blog</div>
             <div class="tab" data-tab="books">Books</div>
             <div class="tab" data-tab="awesome-links">Awesome Links</div>
+            <div class="tab" data-tab="configs">Configs</div>
         </div>
 
         <div class="tab-content active" id="about">
@@ -287,12 +490,8 @@
             <div class="section">
                 <h2>Blog</h2>
                 <p>Recent thoughts and writings:</p>
-                <ul>
-                    <li><a href="#" class="link">The Future of Robotics in Education</a> - Exploring how automation can transform learning</li>
-                    <li><a href="#" class="link">Vim Workflows for Productivity</a> - My daily development setup and tricks</li>
-                    <li><a href="#" class="link">Building at Yale</a> - Reflections on student entrepreneurship</li>
-                    <li><a href="#" class="link">Energy and Computing</a> - The intersection of my two fields of study</li>
-                    <li><a href="#" class="link">Terminal Aesthetics</a> - Why I spend so much time on my dotfiles</li>
+                <ul id="blog-content">
+                    <!-- Content will be generated by JavaScript -->
                 </ul>
             </div>
         </div>
@@ -300,34 +499,9 @@
         <div class="tab-content" id="books">
             <div class="section">
                 <h2>Books</h2>
-                <p>Books I read in 2025</p>
-                <ul>
-                    <li><a href="https://www.goodreads.com/book/show/12857" class="link" target="_blank">The Gambler</a> - Fyodor Dostoevsky</li>
-                    <li><a href="https://www.goodreads.com/book/show/39330937" class="link" target="_blank">Laws of Human Nature</a> - Robert Greene</li>
-                    <li><a href="https://www.goodreads.com/book/show/213034913" class="link" target="_blank">Bill Gates – Source Code</a> - Bill Gates</li>
-                    <li><a href="https://www.goodreads.com/book/show/230863846" class="link" target="_blank">God Money</a> - Dean Patrick</li>
-                    <li><a href="https://www.goodreads.com/book/show/10046142" class="link" target="_blank">Dancing in the Glory of Monsters</a> - Jason Stearns</li>
-                    <li><a href="https://www.goodreads.com/book/show/12158480-why-nations-fail" class="link" target="_blank">Why Nations Fail</a> - Daron Acemoglu</li>
-                    <li><a href="https://www.goodreads.com/book/show/10569.On_Writing" class="link" target="_blank">On Writing</a> - Stephen King</li>
-                    <li><a href="https://www.goodreads.com/book/show/43062156" class="link" target="_blank">All the Wrong Moves</a> - Sasha Chapin</li>
-                    <li><a href="https://www.goodreads.com/book/show/7936425" class="link" target="_blank">More Money Than God</a> - Sebastian Mallaby</li>
-                    <li><a href="https://www.goodreads.com/book/show/199798270" class="link" target="_blank">UnitX</a></li>
-                    <li><a href="https://www.goodreads.com/book/show/58009109" class="link" target="_blank">The Power Law</a> - Sebastian Mallaby</li>
-                    <li><a href="https://www.goodreads.com/book/show/41793" class="link" target="_blank">Hackers and Painters</a> - Paul Graham</li>
-                    <li><a href="https://www.goodreads.com/book/show/98233.Founders_at_Work" class="link" target="_blank">Founders at Work</a> - Jessica Livingston</li>
-                    <li><a href="https://www.goodreads.com/book/show/149105520" class="link" target="_blank">Going Infinite</a> - Michael Lewis</li>
-                    <li><a href="https://www.goodreads.com/book/show/11383199" class="link" target="_blank">Cracking the Sky</a> - Desmond Prout-Johnes</li>
-                    <li><a href="https://www.goodreads.com/book/show/204236707" class="link" target="_blank">On the Edge</a> - Nate Silver</li>
-                    <li><a href="https://www.goodreads.com/book/show/61331847" class="link" target="_blank">Silicon Valley Porn Star</a> - Jason Portnoy</li>
-                    <li><a href="https://www.goodreads.com/book/show/15750692" class="link" target="_blank">Malice</a> - John Gwynne</li>
-                </ul>
-                <p>Currently reading or not finished:</p>
-                <ul>
-                    <li><a href="https://www.goodreads.com/book/show/86058.Master_of_the_Senate" class="link" target="_blank">Master of the Senate</a> - Robert Caro</li>
-                    <li><a href="https://www.goodreads.com/book/show/656.Anna_Karenina" class="link" target="_blank">Anna Karenina</a> - Leo Tolstoy</li>
-                    <li><a href="https://www.goodreads.com/book/show/10483171-the-beginning-of-infinity" class="link" target="_blank">The Beginning of Infinity</a> - David Deutsch</li>
-                    <li><a href="https://www.goodreads.com/book/show/130507.Orthodoxy" class="link" target="_blank">Orthodoxy</a> - G.K. Chesterton</li>
-                </ul>
+                <div id="books-content">
+                    <!-- Content will be generated by JavaScript -->
+                </div>
             </div>
         </div>
 
@@ -335,15 +509,18 @@
             <div class="section">
                 <h2>Awesome Links</h2>
                 <p>Resources, tools, and sites I find valuable:</p>
-                <ul>
-                    <li><a href="https://hacker-tools.github.io/" class="link" target="_blank">MIT Missing Semester</a> - Essential tools for computer science</li>
-                    <li><a href="https://www.lesswrong.com/" class="link" target="_blank">LessWrong</a> - Rationality and effective thinking</li>
-                    <li><a href="https://www.gwern.net/" class="link" target="_blank">Gwern.net</a> - Deep dives into fascinating topics</li>
-                    <li><a href="https://waitbutwhy.com/" class="link" target="_blank">Wait But Why</a> - Long-form explanations of complex topics</li>
-                    <li><a href="https://vimawesome.com/" class="link" target="_blank">Vim Awesome</a> - Best Vim plugins and resources</li>
-                    <li><a href="https://github.com/awesome-lists/awesome" class="link" target="_blank">Awesome Lists</a> - Curated lists of everything</li>
-                    <li><a href="https://lobste.rs/" class="link" target="_blank">Lobsters</a> - High-quality programming discussion</li>
-                    <li><a href="https://www.marginalia.nu/" class="link" target="_blank">Marginalia Search</a> - Independent search engine</li>
+                <ul id="awesome-links-content">
+                    <!-- Content will be generated by JavaScript -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content" id="configs">
+            <div class="section">
+                <h2>Configs</h2>
+                <p>Configuration snippets and dotfiles:</p>
+                <ul id="configs-content">
+                    <!-- Content will be generated by JavaScript -->
                 </ul>
             </div>
         </div>
@@ -364,17 +541,274 @@
 
     <div class="cursor" id="cursor"></div>
 
+    <!-- Blog Article Sidebar -->
+    <div class="blog-sidebar" id="blogSidebar">
+        <div class="sidebar-header">
+            <h3 id="sidebarTitle">Article Title</h3>
+            <div class="sidebar-controls">
+                <button id="fullscreenBtn" class="sidebar-btn">Fullscreen</button>
+                <button id="closeSidebarBtn" class="sidebar-btn">Close</button>
+            </div>
+        </div>
+        <div class="sidebar-content" id="sidebarContent">
+            Loading...
+        </div>
+    </div>
+
     <script>
         // Vim-inspired functionality
         class VimSite {
             constructor() {
                 this.mode = 'normal';
-                this.sections = ['about', 'blog', 'books', 'awesome-links'];
+                this.sections = ['about', 'blog', 'books', 'awesome-links', 'configs'];
                 this.currentSection = 0;
                 this.searchTerm = '';
                 this.searchMatches = [];
                 this.currentMatchIndex = -1;
                 this.scrollSpeed = 50;
+                
+                // Data structures for content management
+                this.books = {
+                    read2025: [
+                        { title: "The Gambler", author: "Fyodor Dostoevsky", url: "https://www.goodreads.com/book/show/12857" },
+                        { title: "Laws of Human Nature", author: "Robert Greene", url: "https://www.goodreads.com/book/show/39330937" },
+                        { title: "Bill Gates – Source Code", author: "Bill Gates", url: "https://www.goodreads.com/book/show/213034913" },
+                        { title: "God Money", author: "Dean Patrick", url: "https://www.goodreads.com/book/show/230863846" },
+                        { title: "Dancing in the Glory of Monsters", author: "Jason Stearns", url: "https://www.goodreads.com/book/show/10046142" },
+                        { title: "Why Nations Fail", author: "Daron Acemoglu", url: "https://www.goodreads.com/book/show/12158480-why-nations-fail" },
+                        { title: "On Writing", author: "Stephen King", url: "https://www.goodreads.com/book/show/10569.On_Writing" },
+                        { title: "All the Wrong Moves", author: "Sasha Chapin", url: "https://www.goodreads.com/book/show/43062156" },
+                        { title: "More Money Than God", author: "Sebastian Mallaby", url: "https://www.goodreads.com/book/show/7936425" },
+                        { title: "UnitX", author: "", url: "https://www.goodreads.com/book/show/199798270" },
+                        { title: "The Power Law", author: "Sebastian Mallaby", url: "https://www.goodreads.com/book/show/58009109" },
+                        { title: "Hackers and Painters", author: "Paul Graham", url: "https://www.goodreads.com/book/show/41793" },
+                        { title: "Founders at Work", author: "Jessica Livingston", url: "https://www.goodreads.com/book/show/98233.Founders_at_Work" },
+                        { title: "Going Infinite", author: "Michael Lewis", url: "https://www.goodreads.com/book/show/149105520" },
+                        { title: "Cracking the Sky", author: "Desmond Prout-Johnes", url: "https://www.goodreads.com/book/show/11383199" },
+                        { title: "On the Edge", author: "Nate Silver", url: "https://www.goodreads.com/book/show/204236707" },
+                        { title: "Silicon Valley Porn Star", author: "Jason Portnoy", url: "https://www.goodreads.com/book/show/61331847" },
+                        { title: "Malice", author: "John Gwynne", url: "https://www.goodreads.com/book/show/15750692" }
+                    ],
+                    currentlyReading: [
+                        { title: "Master of the Senate", author: "Robert Caro", url: "https://www.goodreads.com/book/show/86058.Master_of_the_Senate" },
+                        { title: "Anna Karenina", author: "Leo Tolstoy", url: "https://www.goodreads.com/book/show/656.Anna_Karenina" },
+                        { title: "The Beginning of Infinity", author: "David Deutsch", url: "https://www.goodreads.com/book/show/10483171-the-beginning-of-infinity" },
+                        { title: "Orthodoxy", author: "G.K. Chesterton", url: "https://www.goodreads.com/book/show/130507.Orthodoxy" }
+                    ]
+                };
+                
+                this.blogPosts = [];
+                this.blogIndexUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/index.txt";
+                this.blogBaseUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/";
+                this.currentBlogArticle = null;
+                this.isSidebarMode = false;
+                this.currentConfig = null;
+                
+                this.awesomeLinks = {
+                    blogs: [
+                        { title: "LessWrong", description: "Rationality and effective thinking", url: "https://www.lesswrong.com/" },
+                        { title: "Astral Codex Ten", description: "Scott Alexander's blog on science, medicine, and philosophy", url: "https://www.astralcodexten.com/" },
+                        { title: "Gwern.net", description: "Deep statistical analyses and research", url: "https://www.gwern.net/" },
+                        { title: "Overcoming Bias", description: "Robin Hanson's blog on cognitive biases", url: "https://www.overcomingbias.com/" },
+                        { title: "Marginal Revolution", description: "Tyler Cowen and Alex Tabarrok on economics", url: "https://marginalrevolution.com/" },
+                        { title: "Don't Worry About the Vase", description: "Zvi Mowshowitz on AI, rationality, and policy", url: "https://thezvi.substack.com/" },
+                        { title: "Ben Kuhn", description: "Wave CTO on software engineering and productivity", url: "https://www.benkuhn.net/" },
+                        { title: "Lil'Log", description: "Lilian Weng's AI research notes and learning", url: "https://lilianweng.github.io/" },
+                        { title: "Melting Asphalt", description: "Kevin Simler's essays on philosophy and human behavior", url: "https://meltingasphalt.com/" },
+                        { title: "Yaw's Brief", description: "Yaw Boadu on Africa, development economics, and geopolitics", url: "https://yawboadu.substack.com/" },
+                        { title: "Extelligence", description: "Communal sense-making and digital governance", url: "https://extelligence.substack.com/" },
+                        { title: "Information Processing", description: "Steve Hsu on physics, AI, and genomics", url: "https://stevehsu.substack.com/" },
+                        { title: "Irrational Analysis", description: "Engineering-driven investment analysis", url: "https://irrationalanalysis.substack.com/" },
+                        { title: "Bet On It", description: "Bryan Caplan on economics and policy", url: "https://betonit.substack.com/" },
+                        { title: "Paul Graham Essays", description: "Essays on startups, technology, and life", url: "https://www.paulgraham.com/articles.html" }
+                    ],
+                    podcasts: [
+                        { title: "Lex Fridman Podcast", description: "Conversations about science, technology, and philosophy", url: "https://lexfridman.com/podcast/" },
+                        { title: "Dwarkesh Podcast", description: "Deeply researched interviews with leading thinkers", url: "https://www.dwarkesh.com/" },
+                        { title: "Unsupervised Learning", description: "Daniel Miessler on cybersecurity, AI, and technology", url: "https://danielmiessler.com/podcast/" },
+                        { title: "Complex Systems", description: "Patio11 on business and technology systems", url: "https://www.kalzumeus.com/podcast/" },
+                        { title: "The History of Rome", description: "Mike Duncan's complete Roman history", url: "https://thehistoryofrome.typepad.com/" },
+                        { title: "Liftoff", description: "Space podcast covering launches and missions", url: "https://www.relay.fm/liftoff" },
+                        { title: "Conversations with Tyler", description: "Tyler Cowen interviews underrated thinkers", url: "https://conversationswithtyler.com/" },
+                        { title: "Jonathan Bi", description: "Philosophy and continental thought", url: "https://www.youtube.com/@jonathanbionline" },
+                        { title: "Philosophize This", description: "Accessible philosophy podcast", url: "https://philosophizethis.org/" },
+                        { title: "Acquired", description: "Deep dives into company and business stories", url: "https://www.acquired.fm/" }
+                    ],
+                    misc: [
+                        { title: "Bartosz Ciechanowski", description: "Interactive explanations of complex topics", url: "https://ciechanow.ski/" },
+                        { title: "Hacker News", description: "Technology and startup discussion", url: "https://news.ycombinator.com/" },
+                        { title: "Marginal Revolution", description: "Economics blog and ideas", url: "https://marginalrevolution.com/" },
+                        { title: "Arch Wiki", description: "Comprehensive Linux documentation", url: "https://wiki.archlinux.org/" },
+                        { title: "3Blue1Brown", description: "Visual mathematics explanations", url: "https://www.3blue1brown.com/" },
+                        { title: "Vim Awesome", description: "Best Vim plugins and resources", url: "https://vimawesome.com/" },
+                        { title: "Papers with Code", description: "Machine learning papers with implementation", url: "https://paperswithcode.com/" }
+                    ]
+                };
+                
+                this.configs = [
+                    { 
+                        title: "tmux.conf", 
+                        description: "Terminal multiplexer configuration",
+                        type: "tmux",
+                        content: `# List of plugins
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'erikw/tmux-powerline'
+# Other examples:
+# set -g @plugin 'github_username/plugin_name'
+# set -g @plugin 'github_username/plugin_name#branch'
+# set -g @plugin 'git@github.com:user/plugin'
+# set -g @plugin 'git@bitbucket.com:user/plugin'
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'
+set -g default-shell /bin/zsh`
+                    },
+                    { 
+                        title: "hyprland.conf", 
+                        description: "Hyprland window manager configuration",
+                        type: "hyprland",
+                        content: `# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  #
+# always refer to Hyprland wiki
+# https://wiki.hyprland.org/
+
+# Initial boot script enable to apply initial wallpapers, theming, new settings etc.
+# suggest not to change this or delete this including deleting referrence file in ~/.config/hypr/.initial_startup_done
+# as long as the referrence file is present, this initial-boot.sh will not execute
+exec-once = $HOME/.config/hypr/initial-boot.sh
+
+# Sourcing external config files
+$configs = $HOME/.config/hypr/configs # Default Configs directory path
+
+source=$configs/Keybinds.conf # Pre-configured keybinds
+
+# ## This is where you want to start tinkering 
+$UserConfigs = $HOME/.config/hypr/UserConfigs # User Configs directory path
+
+source= $UserConfigs/Startup_Apps.conf # put your start-up packages on this file
+
+source= $UserConfigs/ENVariables.conf # Environment variables to load
+
+#source= $UserConfigs/Monitors.conf # Its all about your monitor config (old dots) will remove on push to main
+#source= $UserConfigs/WorkspaceRules.conf # Hyprland workspaces (old dots) will remove on push to main
+
+source= $UserConfigs/Laptops.conf # For laptop related
+
+source= $UserConfigs/LaptopDisplay.conf # Laptop display related. You need to read the comment on this file
+
+source= $UserConfigs/WindowRules.conf # all about Hyprland Window Rules and Layer Rules
+
+source= $UserConfigs/UserDecorations.conf # Decorations config file
+
+source= $UserConfigs/UserAnimations.conf # Animation config file
+
+source= $UserConfigs/UserKeybinds.conf # Put your own keybinds here
+
+source= $UserConfigs/UserSettings.conf # Main Hyprland Settings.
+
+source= $UserConfigs/01-UserDefaults.conf # settings for User defaults apps
+
+# nwg-displays
+source= $HOME/.config/hypr/monitors.conf
+source= $HOME/.config/hypr/workspaces.conf`
+                    },
+                    { 
+                        title: "nvim/init.lua", 
+                        description: "Neovim configuration entry point",
+                        type: "lua",
+                        content: `local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup("plugins")
+require("vim-options")`
+                    },
+                    { 
+                        title: "wezterm.lua", 
+                        description: "Wezterm terminal emulator configuration",
+                        type: "lua",
+                        content: `local wezterm = require("wezterm")
+
+return {
+  -- …your existing options …
+
+  -- ── Background image ─────────────────────────────────────
+  background = {
+    { source = { File = "/home/freeman/Pictures/nebula.jpg" }, -- path to your image
+      hsb = {                                  -- tweak to taste
+        hue = 1.0,        -- 1 = keep
+        saturation = 1.0, -- 1 = keep
+        brightness = 0.15 -- 0 → black, 1 → full bright
+      },
+      attachment = "Fixed",                    -- image stays put
+      repeat_x = "NoRepeat",                   -- no tiling
+      repeat_y = "NoRepeat",
+      opacity = 0.20,                          -- 0 = transparent
+    },
+  },
+}`
+                    },
+                    { 
+                        title: ".zshrc", 
+                        description: "Zsh shell configuration",
+                        type: "shell",
+                        content: `# Use powerline
+USE_POWERLINE="true"
+# Has weird character width
+# Example:
+#    is not a diamond
+HAS_WIDECHARS="false"
+# Source manjaro-zsh-configuration
+if [[ -e /usr/share/zsh/manjaro-zsh-config ]]; then
+  source /usr/share/zsh/manjaro-zsh-config
+fi
+# Use manjaro zsh prompt
+if [[ -e /usr/share/zsh/manjaro-zsh-prompt ]]; then
+  source /usr/share/zsh/manjaro-zsh-prompt
+fi
+export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
+[ -f /opt/miniforge/etc/profile.d/conda.sh ] && source /opt/miniforge/etc/profile.d/conda.sh
+
+nuke_ros () {
+  for v in \${(k)parameters}; do
+    [[ \$v == ROS* || \$v == AMENT* || \$v == COLCON* || \$v == RMW* ]] && unset \$v
+  done
+  unset CMAKE_PREFIX_PATH PYTHONPATH
+}
+alias use_humble='nuke_ros; source /opt/ros/humble/setup.zsh'
+alias use_jazzy='nuke_ros; source /opt/ros/jazzy/setup.zsh'
+export CURL_CA_BUNDLE=$(python -c "import certifi; print(certifi.where())")
+export SSL_CERT_FILE=$(python -c "import certifi; print(certifi.where())")
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/anaconda/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/anaconda/etc/profile.d/conda.sh" ]; then
+        . "/opt/anaconda/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/anaconda/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh)"`
+                    }
+                ];
                 
                 // Cursor position tracking
                 this.cursorX = 0;
@@ -386,10 +820,280 @@
                 this.init();
             }
 
+            generateContent() {
+                this.generateBlogContent();
+                this.generateBooksContent();
+                this.generateAwesomeLinksContent();
+                this.generateConfigsContent();
+            }
+
+            async generateBlogContent() {
+                const blogContainer = document.getElementById('blog-content');
+                blogContainer.innerHTML = '<p>Loading blog posts...</p>';
+                
+                try {
+                    await this.loadBlogIndex();
+                    blogContainer.innerHTML = '';
+                    
+                    if (this.blogPosts.length === 0) {
+                        blogContainer.innerHTML = '<p>No blog posts found.</p>';
+                        return;
+                    }
+                    
+                    const ul = document.createElement('ul');
+                    this.blogPosts.forEach(post => {
+                        const li = document.createElement('li');
+                        li.className = 'blog-file-item';
+                        li.innerHTML = `<span class="link">${post.title}</span>`;
+                        li.addEventListener('click', () => this.openBlogArticle(post));
+                        ul.appendChild(li);
+                    });
+                    blogContainer.appendChild(ul);
+                    
+                } catch (error) {
+                    blogContainer.innerHTML = '<p>Error loading blog posts. Please try again later.</p>';
+                    console.error('Error loading blog:', error);
+                }
+            }
+
+            async loadBlogIndex() {
+                try {
+                    const response = await fetch(this.blogIndexUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const indexText = await response.text();
+                    
+                    this.blogPosts = [];
+                    const lines = indexText.trim().split('\n');
+                    
+                    lines.forEach(line => {
+                        if (line.trim()) {
+                            const filename = line.trim();
+                            const title = filename.replace('.md', '').replace(/[-_]/g, ' ');
+                            this.blogPosts.push({
+                                title: title,
+                                filename: filename,
+                                url: this.blogBaseUrl + filename
+                            });
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading blog index:', error);
+                    // Fallback to sample data
+                    this.blogPosts = [
+                        { title: "Welcome", filename: "welcome.md", url: this.blogBaseUrl + "welcome.md" }
+                    ];
+                }
+            }
+
+            async openBlogArticle(post) {
+                this.currentBlogArticle = post;
+                this.isSidebarMode = true;
+                
+                // Update URL for direct linking
+                const blogUrl = `${window.location.origin}${window.location.pathname}?blog=${encodeURIComponent(post.filename)}`;
+                window.history.pushState({}, '', blogUrl);
+                
+                // Update sidebar title
+                document.getElementById('sidebarTitle').textContent = post.title;
+                
+                // Show loading state
+                document.getElementById('sidebarContent').innerHTML = '<p>Loading article...</p>';
+                
+                // Show sidebar
+                document.getElementById('blogSidebar').classList.add('active');
+                document.querySelector('.container').classList.add('sidebar-open');
+                
+                try {
+                    const response = await fetch(post.url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const markdown = await response.text();
+                    
+                    // Convert markdown to HTML (basic conversion)
+                    const html = this.markdownToHtml(markdown);
+                    document.getElementById('sidebarContent').innerHTML = html;
+                    
+                } catch (error) {
+                    document.getElementById('sidebarContent').innerHTML = '<p>Error loading article. Please try again later.</p>';
+                    console.error('Error loading article:', error);
+                }
+            }
+
+            markdownToHtml(markdown) {
+                // Basic markdown to HTML conversion
+                let html = markdown
+                    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+                    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    .replace(/^\- (.*$)/gm, '<li>$1</li>')
+                    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/^(?!<[h|u|p|c])/gm, '<p>')
+                    .replace(/(?<!>)$/gm, '</p>')
+                    .replace(/<p><\/p>/g, '')
+                    .replace(/<p>(<[h|u])/g, '$1')
+                    .replace(/(<\/[h|u]>)<\/p>/g, '$1');
+                
+                return html;
+            }
+
+            openConfigFile(config) {
+                this.currentConfig = config;
+                this.isSidebarMode = true;
+                
+                // Update sidebar title
+                document.getElementById('sidebarTitle').textContent = config.title;
+                
+                // Show sidebar
+                document.getElementById('blogSidebar').classList.add('active');
+                document.querySelector('.container').classList.add('sidebar-open');
+                
+                // Display config content with syntax highlighting
+                const formattedContent = this.formatConfigContent(config.content, config.type);
+                document.getElementById('sidebarContent').innerHTML = formattedContent;
+            }
+
+            formatConfigContent(content, type) {
+                // Basic syntax highlighting for different config types
+                let formattedContent = content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                
+                // Apply basic syntax highlighting based on type
+                switch(type) {
+                    case 'shell':
+                        formattedContent = formattedContent
+                            .replace(/^(#.*$)/gm, '<span style="color: #6A9955;">$1</span>')
+                            .replace(/^(export\s+\w+=[^#]*)/gm, '<span style="color: #569CD6;">$1</span>')
+                            .replace(/^(alias\s+[^=]+=[^#]*)/gm, '<span style="color: #C586C0;">$1</span>');
+                        break;
+                    case 'tmux':
+                        formattedContent = formattedContent
+                            .replace(/^(#.*$)/gm, '<span style="color: #6A9955;">$1</span>')
+                            .replace(/^(set\s+[^#]*)/gm, '<span style="color: #569CD6;">$1</span>')
+                            .replace(/^(run\s+[^#]*)/gm, '<span style="color: #C586C0;">$1</span>');
+                        break;
+                    case 'lua':
+                        formattedContent = formattedContent
+                            .replace(/^(--.*$)/gm, '<span style="color: #6A9955;">$1</span>')
+                            .replace(/\b(local|require|return|if|then|else|end|function)\b/g, '<span style="color: #569CD6;">$1</span>')
+                            .replace(/["']([^"']*?)["']/g, '<span style="color: #CE9178;">"$1"</span>');
+                        break;
+                    case 'hyprland':
+                        formattedContent = formattedContent
+                            .replace(/^(#.*$)/gm, '<span style="color: #6A9955;">$1</span>')
+                            .replace(/^(exec-once\s*=|source\s*=|\$\w+\s*=)/gm, '<span style="color: #569CD6;">$1</span>')
+                            .replace(/(\$\w+)/g, '<span style="color: #4EC9B0;">$1</span>');
+                        break;
+                }
+                
+                return `<pre><code>${formattedContent}</code></pre>`;
+            }
+
+            generateBooksContent() {
+                const booksContainer = document.getElementById('books-content');
+                booksContainer.innerHTML = '';
+                
+                // Books read in 2025
+                const read2025Section = document.createElement('div');
+                read2025Section.innerHTML = '<p>Books I read in 2025</p>';
+                const read2025List = document.createElement('ul');
+                
+                this.books.read2025.forEach(book => {
+                    const li = document.createElement('li');
+                    const authorText = book.author ? ` - ${book.author}` : '';
+                    li.innerHTML = `<a href="${book.url}" class="link" target="_blank">${book.title}</a>${authorText}`;
+                    read2025List.appendChild(li);
+                });
+                
+                read2025Section.appendChild(read2025List);
+                booksContainer.appendChild(read2025Section);
+                
+                // Currently reading
+                const currentlyReadingSection = document.createElement('div');
+                currentlyReadingSection.innerHTML = '<p>Currently reading or not finished:</p>';
+                const currentlyReadingList = document.createElement('ul');
+                
+                this.books.currentlyReading.forEach(book => {
+                    const li = document.createElement('li');
+                    const authorText = book.author ? ` - ${book.author}` : '';
+                    li.innerHTML = `<a href="${book.url}" class="link" target="_blank">${book.title}</a>${authorText}`;
+                    currentlyReadingList.appendChild(li);
+                });
+                
+                currentlyReadingSection.appendChild(currentlyReadingList);
+                booksContainer.appendChild(currentlyReadingSection);
+            }
+
+            generateAwesomeLinksContent() {
+                const awesomeLinksContainer = document.getElementById('awesome-links-content');
+                awesomeLinksContainer.innerHTML = '';
+                
+                // Blogs I Like section
+                const blogsSection = document.createElement('div');
+                blogsSection.innerHTML = '<h3>Blogs I Like</h3>';
+                const blogsList = document.createElement('ul');
+                this.awesomeLinks.blogs.forEach(link => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${link.url}" class="link" target="_blank">${link.title}</a> - ${link.description}`;
+                    blogsList.appendChild(li);
+                });
+                blogsSection.appendChild(blogsList);
+                awesomeLinksContainer.appendChild(blogsSection);
+                
+                // Podcasts section
+                const podcastsSection = document.createElement('div');
+                podcastsSection.innerHTML = '<h3>Podcasts</h3>';
+                const podcastsList = document.createElement('ul');
+                this.awesomeLinks.podcasts.forEach(link => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${link.url}" class="link" target="_blank">${link.title}</a> - ${link.description}`;
+                    podcastsList.appendChild(li);
+                });
+                podcastsSection.appendChild(podcastsList);
+                awesomeLinksContainer.appendChild(podcastsSection);
+                
+                // Misc section
+                const miscSection = document.createElement('div');
+                miscSection.innerHTML = '<h3>Misc</h3>';
+                const miscList = document.createElement('ul');
+                this.awesomeLinks.misc.forEach(link => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${link.url}" class="link" target="_blank">${link.title}</a> - ${link.description}`;
+                    miscList.appendChild(li);
+                });
+                miscSection.appendChild(miscList);
+                awesomeLinksContainer.appendChild(miscSection);
+            }
+
+            generateConfigsContent() {
+                const configsContainer = document.getElementById('configs-content');
+                configsContainer.innerHTML = '';
+                
+                const ul = document.createElement('ul');
+                this.configs.forEach(config => {
+                    const li = document.createElement('li');
+                    li.className = 'config-file-item';
+                    li.innerHTML = `<span class="link">${config.title}</span> - ${config.description}`;
+                    li.addEventListener('click', () => this.openConfigFile(config));
+                    ul.appendChild(li);
+                });
+                configsContainer.appendChild(ul);
+            }
+
             init() {
                 this.cursor = document.getElementById('cursor');
+                this.generateContent();
                 this.bindEvents();
                 this.bindTabEvents();
+                this.bindSidebarEvents();
+                this.handleUrlRouting();
                 this.showTab('about');
                 this.initializeCursor();
                 this.showStatus('NORMAL MODE | Press ? for help');
@@ -408,6 +1112,93 @@
                         this.showTab(e.target.dataset.tab);
                     });
                 });
+            }
+
+            bindSidebarEvents() {
+                document.getElementById('closeSidebarBtn').addEventListener('click', () => {
+                    this.closeSidebar();
+                });
+
+                document.getElementById('fullscreenBtn').addEventListener('click', () => {
+                    this.openFullscreen();
+                });
+
+                // Close sidebar when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (this.isSidebarMode && !document.getElementById('blogSidebar').contains(e.target)) {
+                        // Don't close if clicking on blog file items or config file items
+                        if (!e.target.closest('.blog-file-item') && !e.target.closest('.config-file-item')) {
+                            this.closeSidebar();
+                        }
+                    }
+                });
+            }
+
+            closeSidebar() {
+                document.getElementById('blogSidebar').classList.remove('active');
+                document.querySelector('.container').classList.remove('sidebar-open');
+                this.isSidebarMode = false;
+                this.currentBlogArticle = null;
+                this.currentConfig = null;
+                
+                // Update URL to remove blog article
+                window.history.pushState({}, '', window.location.pathname);
+            }
+
+            openFullscreen() {
+                if (this.currentBlogArticle) {
+                    const blogUrl = `${window.location.origin}${window.location.pathname}?blog=${encodeURIComponent(this.currentBlogArticle.filename)}`;
+                    window.open(blogUrl, '_blank');
+                }
+            }
+
+            handleUrlRouting() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const blogParam = urlParams.get('blog');
+                
+                if (blogParam) {
+                    // Load blog in fullscreen mode
+                    this.loadBlogIndex().then(() => {
+                        const post = this.blogPosts.find(p => p.filename === blogParam);
+                        if (post) {
+                            this.showTab('blog');
+                            this.openBlogFullscreen(post);
+                        }
+                    });
+                }
+            }
+
+            async openBlogFullscreen(post) {
+                this.currentBlogArticle = post;
+                
+                // Replace blog content with fullscreen article
+                const blogContainer = document.getElementById('blog-content');
+                blogContainer.innerHTML = '<p>Loading article...</p>';
+                
+                try {
+                    const response = await fetch(post.url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const markdown = await response.text();
+                    
+                    const html = this.markdownToHtml(markdown);
+                    blogContainer.innerHTML = `
+                        <div class="fullscreen-article">
+                            <div class="article-header">
+                                <h1>${post.title}</h1>
+                                <button onclick="window.close()" class="sidebar-btn">Close</button>
+                            </div>
+                            <div class="article-content">
+                                ${html}
+                            </div>
+                        </div>
+                    `;
+                    
+                } catch (error) {
+                    blogContainer.innerHTML = '<p>Error loading article. Please try again later.</p>';
+                    console.error('Error loading article:', error);
+                }
             }
 
             showTab(tabName) {
@@ -747,6 +1538,10 @@
                     case 'links':
                     case 'l':
                         this.goToSection('awesome-links');
+                        break;
+                    case 'configs':
+                    case 'c':
+                        this.goToSection('configs');
                         break;
                     case 'help':
                     case 'h':
