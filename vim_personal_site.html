@@ -1318,8 +1318,29 @@
                 this.cursor.style.left = (containerRect.left + this.cursorX * this.charWidth) + 'px';
                 this.cursor.style.top = (containerRect.top + scrollTop + this.cursorY * this.lineHeight) + 'px';
                 
+                // Auto-scroll to keep cursor visible
+                this.ensureCursorVisible();
+                
                 // Check for hover states after position update
                 setTimeout(() => this.updateCursorHover(), 0);
+            }
+
+            ensureCursorVisible() {
+                const cursorRect = this.cursor.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const scrollBuffer = 100; // Buffer space in pixels
+                
+                // Check if cursor is below the visible area
+                if (cursorRect.bottom > viewportHeight - scrollBuffer) {
+                    const scrollAmount = cursorRect.bottom - (viewportHeight - scrollBuffer);
+                    window.scrollBy(0, scrollAmount);
+                }
+                
+                // Check if cursor is above the visible area
+                if (cursorRect.top < scrollBuffer) {
+                    const scrollAmount = scrollBuffer - cursorRect.top;
+                    window.scrollBy(0, -scrollAmount);
+                }
             }
 
             moveCursorUp() {
