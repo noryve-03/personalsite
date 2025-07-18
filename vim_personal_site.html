@@ -4,7 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Freeman -- Builder</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
     <style>
+        :root {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2a2a2a;
+            --accent-bg: #3a3a3a;
+            --border-color: #333;
+            --text-color: #c0c0c0;
+            --text-muted: #666;
+            --text-dim: #888;
+            --accent-green: #00ff00;
+            --accent-cyan: #00ffff;
+            --error-color: #ff6b6b;
+            --font-mono: 'Courier New', monospace;
+            --border-radius: 3px;
+            --transition: all 0.2s;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,9 +29,9 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background-color: #1a1a1a;
-            color: #c0c0c0;
+            font-family: var(--font-mono);
+            background-color: var(--primary-bg);
+            color: var(--text-color);
             line-height: 1.6;
             overflow-x: hidden;
         }
@@ -27,50 +44,50 @@
 
         .header {
             margin-bottom: 2rem;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 1rem;
         }
 
         .header h1 {
-            color: #00ff00;
+            color: var(--accent-green);
             font-size: 2rem;
             margin-bottom: 0.5rem;
         }
 
         .header .subtitle {
-            color: #666;
+            color: var(--text-muted);
             font-size: 1rem;
         }
 
         .navbar {
             display: flex;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 2rem;
             overflow-x: auto;
         }
 
         .tab {
             padding: 0.75rem 1.5rem;
-            background: #2a2a2a;
-            color: #888;
-            border: 1px solid #333;
+            background: var(--secondary-bg);
+            color: var(--text-dim);
+            border: 1px solid var(--border-color);
             border-bottom: none;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--transition);
             white-space: nowrap;
-            font-family: 'Courier New', monospace;
+            font-family: var(--font-mono);
             font-size: 0.9rem;
         }
 
         .tab:hover {
-            background: #3a3a3a;
-            color: #c0c0c0;
+            background: var(--accent-bg);
+            color: var(--text-color);
         }
 
         .tab.active {
-            background: #1a1a1a;
-            color: #00ffff;
-            border-color: #00ffff;
+            background: var(--primary-bg);
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
         }
 
         .tab-content {
@@ -342,28 +359,31 @@
             text-decoration: underline;
         }
 
-        .blog-file-item {
+        .file-item {
             cursor: pointer;
             padding: 0.5rem;
             margin: 0.2rem 0;
-            border-radius: 3px;
-            transition: background-color 0.2s;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
         }
 
-        .blog-file-item:hover {
-            background-color: #333;
+        .file-item:hover {
+            background-color: var(--border-color);
         }
 
+        /* Maintain backward compatibility */
+        .blog-file-item,
         .config-file-item {
             cursor: pointer;
             padding: 0.5rem;
             margin: 0.2rem 0;
-            border-radius: 3px;
-            transition: background-color 0.2s;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
         }
 
+        .blog-file-item:hover,
         .config-file-item:hover {
-            background-color: #333;
+            background-color: var(--border-color);
         }
 
         .container.sidebar-open {
@@ -473,16 +493,9 @@
         <div class="tab-content active" id="about">
             <div class="section">
                 <h2>About</h2>
-                I am a student at <a href="https://www.yale.edu" class="link" target="_blank">Yale University</a>, studying Computer Science and Energy studies. I believe in <a href="https://www.lesswrong.com/posts/Wg6ptgi2DupFuAnXG/orienting-toward-wizard-power" class="link"> "orienting towards wizard power," </a> <a href="https://paulgraham.com/identity.html" class="link"> "keeping my identity small,"</a> and <a href="https://www.benkuhn.net/abyss/" class="link"> "staring into the abyss as a core life skill."</a><br>
-                I am currently building a robotics company. <br> 
-                I am a big fan of <a href="https://neovim.io" class="link" target="_blank">Neovim</a>, <a href="https://github.com/tmux/tmux/wiki" class="link">tmux</a>, <a href="https://ohmyz.sh/" class="link"> and oh-my-zsh. </a>
-                <br><br>
-                <p>Contact me:</p>
-                <ul>
-                    <li>freemanirabaruta@gmail.com</li>
-                    <li>LinkedIn: /in/freeman-irabaruta-7213981a0/</li>
-                    <li>GitHub: /noryve-03</li>
-                </ul>
+                <div id="about-content">
+                    <!-- Content will be generated by JavaScript -->
+                </div>
             </div>
         </div>
 
@@ -567,248 +580,19 @@
                 this.currentMatchIndex = -1;
                 this.scrollSpeed = 50;
                 
-                // Data structures for content management
-                this.books = {
-                    read2025: [
-                        { title: "The Gambler", author: "Fyodor Dostoevsky", url: "https://www.goodreads.com/book/show/12857" },
-                        { title: "Laws of Human Nature", author: "Robert Greene", url: "https://www.goodreads.com/book/show/39330937" },
-                        { title: "Bill Gates – Source Code", author: "Bill Gates", url: "https://www.goodreads.com/book/show/213034913" },
-                        { title: "God Money", author: "Dean Patrick", url: "https://www.goodreads.com/book/show/230863846" },
-                        { title: "Dancing in the Glory of Monsters", author: "Jason Stearns", url: "https://www.goodreads.com/book/show/10046142" },
-                        { title: "Why Nations Fail", author: "Daron Acemoglu", url: "https://www.goodreads.com/book/show/12158480-why-nations-fail" },
-                        { title: "On Writing", author: "Stephen King", url: "https://www.goodreads.com/book/show/10569.On_Writing" },
-                        { title: "All the Wrong Moves", author: "Sasha Chapin", url: "https://www.goodreads.com/book/show/43062156" },
-                        { title: "More Money Than God", author: "Sebastian Mallaby", url: "https://www.goodreads.com/book/show/7936425" },
-                        { title: "UnitX", author: "", url: "https://www.goodreads.com/book/show/199798270" },
-                        { title: "The Power Law", author: "Sebastian Mallaby", url: "https://www.goodreads.com/book/show/58009109" },
-                        { title: "Hackers and Painters", author: "Paul Graham", url: "https://www.goodreads.com/book/show/41793" },
-                        { title: "Founders at Work", author: "Jessica Livingston", url: "https://www.goodreads.com/book/show/98233.Founders_at_Work" },
-                        { title: "Going Infinite", author: "Michael Lewis", url: "https://www.goodreads.com/book/show/149105520" },
-                        { title: "Cracking the Sky", author: "Desmond Prout-Johnes", url: "https://www.goodreads.com/book/show/11383199" },
-                        { title: "On the Edge", author: "Nate Silver", url: "https://www.goodreads.com/book/show/204236707" },
-                        { title: "Silicon Valley Porn Star", author: "Jason Portnoy", url: "https://www.goodreads.com/book/show/61331847" },
-                        { title: "Malice", author: "John Gwynne", url: "https://www.goodreads.com/book/show/15750692" }
-                    ],
-                    currentlyReading: [
-                        { title: "Master of the Senate", author: "Robert Caro", url: "https://www.goodreads.com/book/show/86058.Master_of_the_Senate" },
-                        { title: "Anna Karenina", author: "Leo Tolstoy", url: "https://www.goodreads.com/book/show/656.Anna_Karenina" },
-                        { title: "The Beginning of Infinity", author: "David Deutsch", url: "https://www.goodreads.com/book/show/10483171-the-beginning-of-infinity" },
-                        { title: "Orthodoxy", author: "G.K. Chesterton", url: "https://www.goodreads.com/book/show/130507.Orthodoxy" }
-                    ]
-                };
+                // Data loaded from pages.json
+                this.pagesData = null;
+                this.books = null;
+                this.awesomeLinks = null;
+                this.configs = null;
                 
+                // Blog configuration
                 this.blogPosts = [];
                 this.blogIndexUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/index.txt";
                 this.blogBaseUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/";
                 this.currentBlogArticle = null;
                 this.isSidebarMode = false;
                 this.currentConfig = null;
-                
-                this.awesomeLinks = {
-                    blogs: [
-                        { title: "LessWrong", description: "Rationality and effective thinking", url: "https://www.lesswrong.com/" },
-                        { title: "Astral Codex Ten", description: "Scott Alexander's blog on science, medicine, and philosophy", url: "https://www.astralcodexten.com/" },
-                        { title: "Gwern.net", description: "Deep statistical analyses and research", url: "https://www.gwern.net/" },
-                        { title: "Overcoming Bias", description: "Robin Hanson's blog on cognitive biases", url: "https://www.overcomingbias.com/" },
-                        { title: "Marginal Revolution", description: "Tyler Cowen and Alex Tabarrok on economics", url: "https://marginalrevolution.com/" },
-                        { title: "Don't Worry About the Vase", description: "Zvi Mowshowitz on AI, rationality, and policy", url: "https://thezvi.substack.com/" },
-                        { title: "Ben Kuhn", description: "Wave CTO on software engineering and productivity", url: "https://www.benkuhn.net/" },
-                        { title: "Lil'Log", description: "Lilian Weng's AI research notes and learning", url: "https://lilianweng.github.io/" },
-                        { title: "Melting Asphalt", description: "Kevin Simler's essays on philosophy and human behavior", url: "https://meltingasphalt.com/" },
-                        { title: "Yaw's Brief", description: "Yaw Boadu on Africa, development economics, and geopolitics", url: "https://yawboadu.substack.com/" },
-                        { title: "Extelligence", description: "Communal sense-making and digital governance", url: "https://extelligence.substack.com/" },
-                        { title: "Information Processing", description: "Steve Hsu on physics, AI, and genomics", url: "https://stevehsu.substack.com/" },
-                        { title: "Irrational Analysis", description: "Engineering-driven investment analysis", url: "https://irrationalanalysis.substack.com/" },
-                        { title: "Bet On It", description: "Bryan Caplan on economics and policy", url: "https://betonit.substack.com/" },
-                        { title: "Paul Graham Essays", description: "Essays on startups, technology, and life", url: "https://www.paulgraham.com/articles.html" }
-                    ],
-                    podcasts: [
-                        { title: "Lex Fridman Podcast", description: "Conversations about science, technology, and philosophy", url: "https://lexfridman.com/podcast/" },
-                        { title: "Dwarkesh Podcast", description: "Deeply researched interviews with leading thinkers", url: "https://www.dwarkesh.com/" },
-                        { title: "Unsupervised Learning", description: "Daniel Miessler on cybersecurity, AI, and technology", url: "https://danielmiessler.com/podcast/" },
-                        { title: "Complex Systems", description: "Patio11 on business and technology systems", url: "https://www.kalzumeus.com/podcast/" },
-                        { title: "The History of Rome", description: "Mike Duncan's complete Roman history", url: "https://thehistoryofrome.typepad.com/" },
-                        { title: "Liftoff", description: "Space podcast covering launches and missions", url: "https://www.relay.fm/liftoff" },
-                        { title: "Conversations with Tyler", description: "Tyler Cowen interviews underrated thinkers", url: "https://conversationswithtyler.com/" },
-                        { title: "Jonathan Bi", description: "Philosophy and continental thought", url: "https://www.youtube.com/@jonathanbionline" },
-                        { title: "Philosophize This", description: "Accessible philosophy podcast", url: "https://philosophizethis.org/" },
-                        { title: "Acquired", description: "Deep dives into company and business stories", url: "https://www.acquired.fm/" }
-                    ],
-                    misc: [
-                        { title: "Bartosz Ciechanowski", description: "Interactive explanations of complex topics", url: "https://ciechanow.ski/" },
-                        { title: "Hacker News", description: "Technology and startup discussion", url: "https://news.ycombinator.com/" },
-                        { title: "Marginal Revolution", description: "Economics blog and ideas", url: "https://marginalrevolution.com/" },
-                        { title: "Arch Wiki", description: "Comprehensive Linux documentation", url: "https://wiki.archlinux.org/" },
-                        { title: "3Blue1Brown", description: "Visual mathematics explanations", url: "https://www.3blue1brown.com/" },
-                        { title: "Vim Awesome", description: "Best Vim plugins and resources", url: "https://vimawesome.com/" },
-                        { title: "Papers with Code", description: "Machine learning papers with implementation", url: "https://paperswithcode.com/" }
-                    ]
-                };
-                
-                this.configs = [
-                    { 
-                        title: "tmux.conf", 
-                        description: "Terminal multiplexer configuration",
-                        type: "tmux",
-                        content: `# List of plugins
-set -g @plugin 'tmux-plugins/tpm'
-set -g @plugin 'tmux-plugins/tmux-sensible'
-set -g @plugin 'erikw/tmux-powerline'
-# Other examples:
-# set -g @plugin 'github_username/plugin_name'
-# set -g @plugin 'github_username/plugin_name#branch'
-# set -g @plugin 'git@github.com:user/plugin'
-# set -g @plugin 'git@bitbucket.com:user/plugin'
-
-# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
-run '~/.tmux/plugins/tpm/tpm'
-set -g default-shell /bin/zsh`
-                    },
-                    { 
-                        title: "hyprland.conf", 
-                        description: "Hyprland window manager configuration",
-                        type: "hyprland",
-                        content: `# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  #
-# always refer to Hyprland wiki
-# https://wiki.hyprland.org/
-
-# Initial boot script enable to apply initial wallpapers, theming, new settings etc.
-# suggest not to change this or delete this including deleting referrence file in ~/.config/hypr/.initial_startup_done
-# as long as the referrence file is present, this initial-boot.sh will not execute
-exec-once = $HOME/.config/hypr/initial-boot.sh
-
-# Sourcing external config files
-$configs = $HOME/.config/hypr/configs # Default Configs directory path
-
-source=$configs/Keybinds.conf # Pre-configured keybinds
-
-# ## This is where you want to start tinkering 
-$UserConfigs = $HOME/.config/hypr/UserConfigs # User Configs directory path
-
-source= $UserConfigs/Startup_Apps.conf # put your start-up packages on this file
-
-source= $UserConfigs/ENVariables.conf # Environment variables to load
-
-#source= $UserConfigs/Monitors.conf # Its all about your monitor config (old dots) will remove on push to main
-#source= $UserConfigs/WorkspaceRules.conf # Hyprland workspaces (old dots) will remove on push to main
-
-source= $UserConfigs/Laptops.conf # For laptop related
-
-source= $UserConfigs/LaptopDisplay.conf # Laptop display related. You need to read the comment on this file
-
-source= $UserConfigs/WindowRules.conf # all about Hyprland Window Rules and Layer Rules
-
-source= $UserConfigs/UserDecorations.conf # Decorations config file
-
-source= $UserConfigs/UserAnimations.conf # Animation config file
-
-source= $UserConfigs/UserKeybinds.conf # Put your own keybinds here
-
-source= $UserConfigs/UserSettings.conf # Main Hyprland Settings.
-
-source= $UserConfigs/01-UserDefaults.conf # settings for User defaults apps
-
-# nwg-displays
-source= $HOME/.config/hypr/monitors.conf
-source= $HOME/.config/hypr/workspaces.conf`
-                    },
-                    { 
-                        title: "nvim/init.lua", 
-                        description: "Neovim configuration entry point",
-                        type: "lua",
-                        content: `local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
-
-require("lazy").setup("plugins")
-require("vim-options")`
-                    },
-                    { 
-                        title: "wezterm.lua", 
-                        description: "Wezterm terminal emulator configuration",
-                        type: "lua",
-                        content: `local wezterm = require("wezterm")
-
-return {
-  -- …your existing options …
-
-  -- ── Background image ─────────────────────────────────────
-  background = {
-    { source = { File = "/home/freeman/Pictures/nebula.jpg" }, -- path to your image
-      hsb = {                                  -- tweak to taste
-        hue = 1.0,        -- 1 = keep
-        saturation = 1.0, -- 1 = keep
-        brightness = 0.15 -- 0 → black, 1 → full bright
-      },
-      attachment = "Fixed",                    -- image stays put
-      repeat_x = "NoRepeat",                   -- no tiling
-      repeat_y = "NoRepeat",
-      opacity = 0.20,                          -- 0 = transparent
-    },
-  },
-}`
-                    },
-                    { 
-                        title: ".zshrc", 
-                        description: "Zsh shell configuration",
-                        type: "shell",
-                        content: `# Use powerline
-USE_POWERLINE="true"
-# Has weird character width
-# Example:
-#    is not a diamond
-HAS_WIDECHARS="false"
-# Source manjaro-zsh-configuration
-if [[ -e /usr/share/zsh/manjaro-zsh-config ]]; then
-  source /usr/share/zsh/manjaro-zsh-config
-fi
-# Use manjaro zsh prompt
-if [[ -e /usr/share/zsh/manjaro-zsh-prompt ]]; then
-  source /usr/share/zsh/manjaro-zsh-prompt
-fi
-export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
-[ -f /opt/miniforge/etc/profile.d/conda.sh ] && source /opt/miniforge/etc/profile.d/conda.sh
-
-nuke_ros () {
-  for v in \${(k)parameters}; do
-    [[ \$v == ROS* || \$v == AMENT* || \$v == COLCON* || \$v == RMW* ]] && unset \$v
-  done
-  unset CMAKE_PREFIX_PATH PYTHONPATH
-}
-alias use_humble='nuke_ros; source /opt/ros/humble/setup.zsh'
-alias use_jazzy='nuke_ros; source /opt/ros/jazzy/setup.zsh'
-export CURL_CA_BUNDLE=$(python -c "import certifi; print(certifi.where())")
-export SSL_CERT_FILE=$(python -c "import certifi; print(certifi.where())")
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/anaconda/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/anaconda/etc/profile.d/conda.sh" ]; then
-        . "/opt/anaconda/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/anaconda/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-. "$HOME/.atuin/bin/env"
-
-eval "$(atuin init zsh)"`
-                    }
-                ];
                 
                 // Cursor position tracking
                 this.cursorX = 0;
@@ -817,19 +601,83 @@ eval "$(atuin init zsh)"`
                 this.charWidth = 8;
                 this.cursor = null;
                 
-                this.init();
+                this.loadPagesData().then(() => {
+                    this.init();
+                });
+            }
+
+            async loadPagesData() {
+                try {
+                    const response = await fetch('pages.json');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    this.pagesData = await response.json();
+                    
+                    // Set references to data sections
+                    this.books = this.pagesData.books;
+                    this.awesomeLinks = this.pagesData.awesomeLinks;
+                    this.configs = this.pagesData.configs.files;
+                    
+                } catch (error) {
+                    console.error('Error loading pages data:', error);
+                    // Set fallback data
+                    this.books = { read2025: [], currentlyReading: [] };
+                    this.awesomeLinks = { categories: {} };
+                    this.configs = [];
+                }
             }
 
             generateContent() {
+                this.generateAboutContent();
                 this.generateBlogContent();
                 this.generateBooksContent();
                 this.generateAwesomeLinksContent();
                 this.generateConfigsContent();
             }
 
+            // Utility functions for cleaner code
+            createElement(tag, className = '', innerHTML = '') {
+                const element = document.createElement(tag);
+                if (className) element.className = className;
+                if (innerHTML) element.innerHTML = innerHTML;
+                return element;
+            }
+
+            createLinkItem(item, target = '_blank') {
+                const li = this.createElement('li');
+                const authorText = item.author ? ` - ${item.author}` : '';
+                const description = item.description ? ` - ${item.description}` : '';
+                li.innerHTML = `<a href="${item.url}" class="link" target="${target}">${item.title}</a>${authorText}${description}`;
+                return li;
+            }
+
+            showLoadingState(containerId, message = 'Loading...') {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = `<p>${message}</p>`;
+                }
+            }
+
+            showErrorState(containerId, message = 'Error loading content') {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = `<p style="color: #ff6b6b;">${message}</p>`;
+                }
+            }
+
+            generateAboutContent() {
+                const aboutContainer = document.getElementById('about-content');
+                if (this.pagesData && this.pagesData.about) {
+                    aboutContainer.innerHTML = this.pagesData.about.content;
+                } else {
+                    aboutContainer.innerHTML = '<p>Loading about content...</p>';
+                }
+            }
+
             async generateBlogContent() {
                 const blogContainer = document.getElementById('blog-content');
-                blogContainer.innerHTML = '<p>Loading blog posts...</p>';
+                this.showLoadingState('blog-content', 'Loading blog posts...');
                 
                 try {
                     await this.loadBlogIndex();
@@ -840,10 +688,9 @@ eval "$(atuin init zsh)"`
                         return;
                     }
                     
-                    const ul = document.createElement('ul');
+                    const ul = this.createElement('ul');
                     this.blogPosts.forEach(post => {
-                        const li = document.createElement('li');
-                        li.className = 'blog-file-item';
+                        const li = this.createElement('li', 'blog-file-item');
                         li.innerHTML = `<span class="link">${post.title}</span>`;
                         li.addEventListener('click', () => this.openBlogArticle(post));
                         ul.appendChild(li);
@@ -851,7 +698,7 @@ eval "$(atuin init zsh)"`
                     blogContainer.appendChild(ul);
                     
                 } catch (error) {
-                    blogContainer.innerHTML = '<p>Error loading blog posts. Please try again later.</p>';
+                    this.showErrorState('blog-content', 'Error loading blog posts. Please try again later.');
                     console.error('Error loading blog:', error);
                 }
             }
@@ -923,26 +770,24 @@ eval "$(atuin init zsh)"`
             }
 
             markdownToHtml(markdown) {
-                // Basic markdown to HTML conversion
-                let html = markdown
-                    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-                    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-                    .replace(/`([^`]+)`/g, '<code>$1</code>')
-                    .replace(/^\- (.*$)/gm, '<li>$1</li>')
-                    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-                    .replace(/\n\n/g, '</p><p>')
-                    .replace(/^(?!<[h|u|p|c])/gm, '<p>')
-                    .replace(/(?<!>)$/gm, '</p>')
-                    .replace(/<p><\/p>/g, '')
-                    .replace(/<p>(<[h|u])/g, '$1')
-                    .replace(/(<\/[h|u]>)<\/p>/g, '$1');
-                
-                return html;
+                // Use Marked.js for proper markdown parsing
+                try {
+                    // Configure marked for security and features
+                    marked.setOptions({
+                        breaks: true,
+                        gfm: true,
+                        sanitize: false,
+                        smartLists: true,
+                        smartypants: true
+                    });
+                    
+                    // Use marked to parse markdown
+                    return marked.parse(markdown);
+                } catch (error) {
+                    console.error('Error parsing markdown:', error);
+                    // Fallback to plain text if parsing fails
+                    return `<pre>${markdown}</pre>`;
+                }
             }
 
             openConfigFile(config) {
@@ -1000,31 +845,28 @@ eval "$(atuin init zsh)"`
                 const booksContainer = document.getElementById('books-content');
                 booksContainer.innerHTML = '';
                 
+                if (!this.books) {
+                    booksContainer.innerHTML = '<p>Loading books...</p>';
+                    return;
+                }
+                
                 // Books read in 2025
-                const read2025Section = document.createElement('div');
-                read2025Section.innerHTML = '<p>Books I read in 2025</p>';
-                const read2025List = document.createElement('ul');
+                const read2025Section = this.createElement('div', '', '<p>Books I read in 2025</p>');
+                const read2025List = this.createElement('ul');
                 
                 this.books.read2025.forEach(book => {
-                    const li = document.createElement('li');
-                    const authorText = book.author ? ` - ${book.author}` : '';
-                    li.innerHTML = `<a href="${book.url}" class="link" target="_blank">${book.title}</a>${authorText}`;
-                    read2025List.appendChild(li);
+                    read2025List.appendChild(this.createLinkItem(book));
                 });
                 
                 read2025Section.appendChild(read2025List);
                 booksContainer.appendChild(read2025Section);
                 
                 // Currently reading
-                const currentlyReadingSection = document.createElement('div');
-                currentlyReadingSection.innerHTML = '<p>Currently reading or not finished:</p>';
-                const currentlyReadingList = document.createElement('ul');
+                const currentlyReadingSection = this.createElement('div', '', '<p>Currently reading or not finished:</p>');
+                const currentlyReadingList = this.createElement('ul');
                 
                 this.books.currentlyReading.forEach(book => {
-                    const li = document.createElement('li');
-                    const authorText = book.author ? ` - ${book.author}` : '';
-                    li.innerHTML = `<a href="${book.url}" class="link" target="_blank">${book.title}</a>${authorText}`;
-                    currentlyReadingList.appendChild(li);
+                    currentlyReadingList.appendChild(this.createLinkItem(book));
                 });
                 
                 currentlyReadingSection.appendChild(currentlyReadingList);
@@ -1035,51 +877,37 @@ eval "$(atuin init zsh)"`
                 const awesomeLinksContainer = document.getElementById('awesome-links-content');
                 awesomeLinksContainer.innerHTML = '';
                 
-                // Blogs I Like section
-                const blogsSection = document.createElement('div');
-                blogsSection.innerHTML = '<h3>Blogs I Like</h3>';
-                const blogsList = document.createElement('ul');
-                this.awesomeLinks.blogs.forEach(link => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="${link.url}" class="link" target="_blank">${link.title}</a> - ${link.description}`;
-                    blogsList.appendChild(li);
-                });
-                blogsSection.appendChild(blogsList);
-                awesomeLinksContainer.appendChild(blogsSection);
+                if (!this.awesomeLinks || !this.awesomeLinks.categories) {
+                    awesomeLinksContainer.innerHTML = '<p>Loading awesome links...</p>';
+                    return;
+                }
                 
-                // Podcasts section
-                const podcastsSection = document.createElement('div');
-                podcastsSection.innerHTML = '<h3>Podcasts</h3>';
-                const podcastsList = document.createElement('ul');
-                this.awesomeLinks.podcasts.forEach(link => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="${link.url}" class="link" target="_blank">${link.title}</a> - ${link.description}`;
-                    podcastsList.appendChild(li);
+                // Generate sections dynamically from categories
+                Object.entries(this.awesomeLinks.categories).forEach(([key, category]) => {
+                    const section = this.createElement('div', '', `<h3>${category.title}</h3>`);
+                    const list = this.createElement('ul');
+                    
+                    category.links.forEach(link => {
+                        list.appendChild(this.createLinkItem(link));
+                    });
+                    
+                    section.appendChild(list);
+                    awesomeLinksContainer.appendChild(section);
                 });
-                podcastsSection.appendChild(podcastsList);
-                awesomeLinksContainer.appendChild(podcastsSection);
-                
-                // Misc section
-                const miscSection = document.createElement('div');
-                miscSection.innerHTML = '<h3>Misc</h3>';
-                const miscList = document.createElement('ul');
-                this.awesomeLinks.misc.forEach(link => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="${link.url}" class="link" target="_blank">${link.title}</a> - ${link.description}`;
-                    miscList.appendChild(li);
-                });
-                miscSection.appendChild(miscList);
-                awesomeLinksContainer.appendChild(miscSection);
             }
 
             generateConfigsContent() {
                 const configsContainer = document.getElementById('configs-content');
                 configsContainer.innerHTML = '';
                 
-                const ul = document.createElement('ul');
+                if (!this.configs || this.configs.length === 0) {
+                    this.showLoadingState('configs-content', 'Loading configurations...');
+                    return;
+                }
+                
+                const ul = this.createElement('ul');
                 this.configs.forEach(config => {
-                    const li = document.createElement('li');
-                    li.className = 'config-file-item';
+                    const li = this.createElement('li', 'config-file-item');
                     li.innerHTML = `<span class="link">${config.title}</span> - ${config.description}`;
                     li.addEventListener('click', () => this.openConfigFile(config));
                     ul.appendChild(li);

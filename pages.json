@@ -1,0 +1,119 @@
+{
+  "about": {
+    "title": "About",
+    "content": "I am a student at <a href=\"https://www.yale.edu\" class=\"link\" target=\"_blank\">Yale University</a>, studying Computer Science and Energy studies. I believe in <a href=\"https://www.lesswrong.com/posts/Wg6ptgi2DupFuAnXG/orienting-toward-wizard-power\" class=\"link\"> \"orienting towards wizard power,\" </a> <a href=\"https://paulgraham.com/identity.html\" class=\"link\"> \"keeping my identity small,\"</a> and <a href=\"https://www.benkuhn.net/abyss/\" class=\"link\"> \"staring into the abyss as a core life skill.\"</a><br>I am currently building a robotics company. <br> I am a big fan of <a href=\"https://neovim.io\" class=\"link\" target=\"_blank\">Neovim</a>, <a href=\"https://github.com/tmux/tmux/wiki\" class=\"link\">tmux</a>, <a href=\"https://ohmyz.sh/\" class=\"link\"> and oh-my-zsh. </a><br><br><p>Contact me:</p><ul><li>freemanirabaruta@gmail.com</li><li>LinkedIn: /in/freeman-irabaruta-7213981a0/</li><li>GitHub: /noryve-03</li></ul>"
+  },
+  "books": {
+    "title": "Books",
+    "read2025": [
+      { "title": "The Gambler", "author": "Fyodor Dostoevsky", "url": "https://www.goodreads.com/book/show/12857" },
+      { "title": "Laws of Human Nature", "author": "Robert Greene", "url": "https://www.goodreads.com/book/show/39330937" },
+      { "title": "Bill Gates – Source Code", "author": "Bill Gates", "url": "https://www.goodreads.com/book/show/213034913" },
+      { "title": "God Money", "author": "Dean Patrick", "url": "https://www.goodreads.com/book/show/230863846" },
+      { "title": "Dancing in the Glory of Monsters", "author": "Jason Stearns", "url": "https://www.goodreads.com/book/show/10046142" },
+      { "title": "Why Nations Fail", "author": "Daron Acemoglu", "url": "https://www.goodreads.com/book/show/12158480-why-nations-fail" },
+      { "title": "On Writing", "author": "Stephen King", "url": "https://www.goodreads.com/book/show/10569.On_Writing" },
+      { "title": "All the Wrong Moves", "author": "Sasha Chapin", "url": "https://www.goodreads.com/book/show/43062156" },
+      { "title": "More Money Than God", "author": "Sebastian Mallaby", "url": "https://www.goodreads.com/book/show/7936425" },
+      { "title": "UnitX", "author": "", "url": "https://www.goodreads.com/book/show/199798270" },
+      { "title": "The Power Law", "author": "Sebastian Mallaby", "url": "https://www.goodreads.com/book/show/58009109" },
+      { "title": "Hackers and Painters", "author": "Paul Graham", "url": "https://www.goodreads.com/book/show/41793" },
+      { "title": "Founders at Work", "author": "Jessica Livingston", "url": "https://www.goodreads.com/book/show/98233.Founders_at_Work" },
+      { "title": "Going Infinite", "author": "Michael Lewis", "url": "https://www.goodreads.com/book/show/149105520" },
+      { "title": "Cracking the Sky", "author": "Desmond Prout-Johnes", "url": "https://www.goodreads.com/book/show/11383199" },
+      { "title": "On the Edge", "author": "Nate Silver", "url": "https://www.goodreads.com/book/show/204236707" },
+      { "title": "Silicon Valley Porn Star", "author": "Jason Portnoy", "url": "https://www.goodreads.com/book/show/61331847" },
+      { "title": "Malice", "author": "John Gwynne", "url": "https://www.goodreads.com/book/show/15750692" }
+    ],
+    "currentlyReading": [
+      { "title": "Master of the Senate", "author": "Robert Caro", "url": "https://www.goodreads.com/book/show/86058.Master_of_the_Senate" },
+      { "title": "Anna Karenina", "author": "Leo Tolstoy", "url": "https://www.goodreads.com/book/show/656.Anna_Karenina" },
+      { "title": "The Beginning of Infinity", "author": "David Deutsch", "url": "https://www.goodreads.com/book/show/10483171-the-beginning-of-infinity" },
+      { "title": "Orthodoxy", "author": "G.K. Chesterton", "url": "https://www.goodreads.com/book/show/130507.Orthodoxy" }
+    ]
+  },
+  "awesomeLinks": {
+    "title": "Awesome Links",
+    "description": "Resources, tools, and sites I find valuable:",
+    "categories": {
+      "blogsILike": {
+        "title": "Blogs I Like",
+        "links": [
+          { "title": "Ben Kuhn", "url": "https://www.benkuhn.net/", "description": "An awesome SWE" },
+          { "title": "Lilian Weng", "url": "https://lilianweng.github.io/", "description": "ThinkingMachines blog" },
+          { "title": "Melting Asphalt", "url": "https://meltingasphalt.com/", "description": "Thought-provoking essays" },
+          { "title": "Yao Yue", "url": "https://substack.com/@yaoyue", "description": "Yao Yue on Substack" },
+          { "title": "Extelligence", "url": "https://extelligence.substack.com/", "description": "Extelligence on Substack" },
+          { "title": "Steve Hsu", "url": "https://stevehsu.substack.com/", "description": "Information Processing" },
+          { "title": "Irrational Analysis", "url": "https://irrationalanalysis.substack.com/", "description": "Irrational Analysis on Substack" },
+          { "title": "Bet On It", "url": "https://betonit.substack.com/", "description": "Bryan Caplan's blog" },
+          { "title": "Astral Codex Ten", "url": "https://astralcodexten.substack.com/", "description": "Scott Alexander's blog" },
+          { "title": "Gwern", "url": "https://gwern.net/", "description": "Research and essays" }
+        ]
+      },
+      "podcasts": {
+        "title": "Podcasts",
+        "links": [
+          { "title": "Lex Fridman Podcast", "url": "https://lexfridman.com/podcast/", "description": "AI and technology discussions" },
+          { "title": "The Dwarkesh Podcast", "url": "https://www.dwarkeshpatel.com/podcast", "description": "Dwarkesh Patel's podcast" },
+          { "title": "Unsupervised Learning", "url": "https://danielmiessler.com/podcast/", "description": "Security and technology" },
+          { "title": "Complex Systems", "url": "https://www.complexsystems.org/", "description": "Patio11's podcast" },
+          { "title": "The History of Rome", "url": "https://thehistoryofrome.typepad.com/", "description": "Mike Duncan's history podcast" },
+          { "title": "Liftoff", "url": "https://www.relay.fm/liftoff", "description": "Space podcast" },
+          { "title": "Conversations with Tyler", "url": "https://conversationswithtyler.com/", "description": "Tyler Cowen's interviews" },
+          { "title": "Jonathan Bi", "url": "https://www.youtube.com/@JonathanBi", "description": "Philosophy and culture" },
+          { "title": "Philosophize This!", "url": "https://philosophizethis.org/", "description": "Philosophy podcast" },
+          { "title": "Acquired", "url": "https://www.acquired.fm/", "description": "Business and technology stories" }
+        ]
+      },
+      "misc": {
+        "title": "Misc",
+        "links": [
+          { "title": "Bartosz Ciechanowski", "url": "https://ciechanow.ski/", "description": "Interactive explanations" },
+          { "title": "Hacker News", "url": "https://news.ycombinator.com/", "description": "Tech news and discussion" },
+          { "title": "Marginal Revolution", "url": "https://marginalrevolution.com/", "description": "Economics blog" },
+          { "title": "Arch Wiki", "url": "https://wiki.archlinux.org/", "description": "Linux documentation" },
+          { "title": "Papers We Love", "url": "https://paperswelove.org/", "description": "Academic papers repository" },
+          { "title": "Lobste.rs", "url": "https://lobste.rs/", "description": "Technology-focused link aggregation" },
+          { "title": "Explained from First Principles", "url": "https://explained-from-first-principles.com/", "description": "Clear explanations of complex topics" }
+        ]
+      }
+    }
+  },
+  "configs": {
+    "title": "Configs",
+    "description": "Configuration snippets and dotfiles:",
+    "files": [
+      { 
+        "title": "tmux.conf", 
+        "description": "Terminal multiplexer configuration",
+        "type": "tmux",
+        "content": "# List of plugins\nset -g @plugin 'tmux-plugins/tpm'\nset -g @plugin 'tmux-plugins/tmux-sensible'\nset -g @plugin 'tmux-plugins/tmux-yank'\nset -g @plugin 'tmux-plugins/tmux-resurrect'\nset -g @plugin 'tmux-plugins/tmux-continuum'\nset -g @plugin 'tmux-plugins/tmux-pain-control'\nset -g @plugin 'tmux-plugins/tmux-copycat'\nset -g @plugin 'tmux-plugins/tmux-open'\nset -g @plugin 'tmux-plugins/tmux-battery'\nset -g @plugin 'tmux-plugins/tmux-cpu'\nset -g @plugin 'tmux-plugins/tmux-online-status'\nset -g @plugin 'jimeh/tmux-themepack'\nset -g @plugin 'tmux-plugins/tmux-prefix-highlight'\n\n# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)\nrun '~/.tmux/plugins/tpm/tpm'"
+      },
+      { 
+        "title": "hyprland.conf", 
+        "description": "Hyprland window manager configuration",
+        "type": "hyprland",
+        "content": "# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  #\n# always refer to Hyprland wiki\n# https://wiki.hyprland.org/\n\n# Initial boot script enable to apply initial wallpapers, theming, new settings etc.\n# suggest not to change this or delete this including deleting referrence file in ~/.config/hypr/.initial_startup_done\n# as long as the referrence file is present, this initial-boot.sh will not execute\nexec-once = $HOME/.config/hypr/initial-boot.sh\n\n# Sourcing external config files\n$configs = $HOME/.config/hypr/configs # Default Configs directory path\n\nsource=$configs/Keybinds.conf # Pre-configured keybinds\n\n# ## This is where you want to start tinkering \n$UserConfigs = $HOME/.config/hypr/UserConfigs # User Configs directory path\n\nsource= $UserConfigs/Startup_Apps.conf # put your start-up packages on this file\n\nsource= $UserConfigs/ENVariables.conf # Environment variables to load\n\n#source= $UserConfigs/Monitors.conf # Its all about your monitor config (old dots) will remove on push to main\n#source= $UserConfigs/WorkspaceRules.conf # Hyprland workspaces (old dots) will remove on push to main\n\nsource= $UserConfigs/Laptops.conf # For laptop related\n\nsource= $UserConfigs/LaptopDisplay.conf # Laptop display related. You need to read the comment on this file\n\nsource= $UserConfigs/WindowRules.conf # all about Hyprland Window Rules and Layer Rules\n\nsource= $UserConfigs/UserDecorations.conf # Decorations config file\n\nsource= $UserConfigs/UserAnimations.conf # Animation config file\n\nsource= $UserConfigs/UserKeybinds.conf # Put your own keybinds here\n\nsource= $UserConfigs/UserSettings.conf # Main Hyprland Settings.\n\nsource= $UserConfigs/01-UserDefaults.conf # settings for User defaults apps\n\n# nwg-displays\nsource= $HOME/.config/hypr/monitors.conf\nsource= $HOME/.config/hypr/workspaces.conf"
+      },
+      { 
+        "title": "nvim/init.lua", 
+        "description": "Neovim configuration entry point",
+        "type": "lua",
+        "content": "local lazypath = vim.fn.stdpath(\"data\") .. \"/lazy/lazy.nvim\"\nif not (vim.uv or vim.loop).fs_stat(lazypath) then\n  vim.fn.system({\n    \"git\",\n    \"clone\",\n    \"--filter=blob:none\",\n    \"https://github.com/folke/lazy.nvim.git\",\n    \"--branch=stable\", -- latest stable release\n    lazypath,\n  })\nend\nvim.opt.rtp:prepend(lazypath)\n\nrequire(\"lazy\").setup(\"plugins\")\nrequire(\"vim-options\")"
+      },
+      { 
+        "title": "wezterm.lua", 
+        "description": "Wezterm terminal emulator configuration",
+        "type": "lua",
+        "content": "local wezterm = require(\"wezterm\")\n\nreturn {\n  -- …your existing options …\n\n  -- ── Background image ─────────────────────────────────────\n  background = {\n    { source = { File = \"/home/freeman/Pictures/nebula.jpg\" }, -- path to your image\n      hsb = {                                  -- tweak to taste\n        hue = 1.0,        -- 1 = keep\n        saturation = 1.0, -- 1 = keep\n        brightness = 0.15 -- 0 → black, 1 → full bright\n      },\n      attachment = \"Fixed\",                    -- image stays put\n      repeat_x = \"NoRepeat\",                   -- no tiling\n      repeat_y = \"NoRepeat\",\n      opacity = 0.20,                          -- 0 = transparent\n    },\n  },\n}"
+      },
+      { 
+        "title": ".zshrc", 
+        "description": "Z shell configuration with conda and ROS setup",
+        "type": "shell",
+        "content": "# Use powerline\nUSE_POWERLINE=\"true\"\n# Has weird character width\n# Example:\n#    is not a diamond\nHAS_WIDECHARS=\"false\"\n# Source manjaro-zsh-configuration\nif [[ -e /usr/share/zsh/manjaro-zsh-config ]]; then\n  source /usr/share/zsh/manjaro-zsh-config\nfi\n# Use manjaro zsh prompt\nif [[ -e /usr/share/zsh/manjaro-zsh-prompt ]]; then\n  source /usr/share/zsh/manjaro-zsh-prompt\nfi\nexport CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1\n[ -f /opt/miniforge/etc/profile.d/conda.sh ] && source /opt/miniforge/etc/profile.d/conda.sh\n\nnuke_ros () {\n  for v in ${(k)parameters}; do\n    [[ $v == ROS* || $v == AMENT* || $v == COLCON* || $v == RMW* ]] && unset $v\n  done\n  unset CMAKE_PREFIX_PATH PYTHONPATH\n}\nalias use_humble='nuke_ros; source /opt/ros/humble/setup.zsh'\nalias use_jazzy='nuke_ros; source /opt/ros/jazzy/setup.zsh'\nexport CURL_CA_BUNDLE=$(python -c \"import certifi; print(certifi.where())\")\nexport SSL_CERT_FILE=$(python -c \"import certifi; print(certifi.where())\")\n\n# >>> conda initialize >>>\n# !! Contents within this block are managed by 'conda init' !!\n__conda_setup=\"$('/opt/anaconda/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)\"\nif [ $? -eq 0 ]; then\n    eval \"$__conda_setup\"\nelse\n    if [ -f \"/opt/anaconda/etc/profile.d/conda.sh\" ]; then\n        . \"/opt/anaconda/etc/profile.d/conda.sh\"\n    else\n        export PATH=\"/opt/anaconda/bin:$PATH\"\n    fi\nfi\nunset __conda_setup\n# <<< conda initialize <<<\nexport GEMINI_API_KEY=AIzaSyBUNT1IffMkukmmXDo7XGIXKzn4BJVfjyY\n# conda (keeps its bin first on PATH)\neval \"$(/opt/anaconda/bin/conda shell.zsh hook)\"\n\n\n. \"$HOME/.atuin/bin/env\"\n\neval \"$(atuin init zsh)\"\nsource $HOME/.atuin/bin/env\nexport WEZTERM_CONFIG_FILE=\"$HOME/.config/wezterm/wezterm.lua\""
+      }
+    ]
+  }
+}
