@@ -344,6 +344,8 @@
             font-family: 'Courier New', monospace;
             line-height: 1.6;
             max-height: calc(100vh - 120px); /* Ensure it doesn't exceed viewport */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            scroll-behavior: smooth;
         }
 
         .sidebar-content h1,
@@ -793,6 +795,13 @@
                 document.getElementById('blogSidebar').classList.add('active');
                 document.querySelector('.container').classList.add('sidebar-open');
                 
+                // Ensure sidebar content is scrollable with mouse
+                const sidebarContent = document.getElementById('sidebarContent');
+                if (sidebarContent) {
+                    sidebarContent.style.overflowY = 'auto';
+                    sidebarContent.scrollTop = 0; // Reset scroll position
+                }
+                
                 try {
                     const response = await fetch(post.url);
                     if (!response.ok) {
@@ -841,6 +850,13 @@
                 // Show sidebar
                 document.getElementById('blogSidebar').classList.add('active');
                 document.querySelector('.container').classList.add('sidebar-open');
+                
+                // Ensure sidebar content is scrollable with mouse
+                const sidebarContent = document.getElementById('sidebarContent');
+                if (sidebarContent) {
+                    sidebarContent.style.overflowY = 'auto';
+                    sidebarContent.scrollTop = 0; // Reset scroll position
+                }
                 
                 // Display config content with syntax highlighting
                 const formattedContent = this.formatConfigContent(config.content, config.type);
@@ -1028,6 +1044,13 @@
                 document.getElementById('blogSidebar').classList.add('active');
                 document.querySelector('.container').classList.add('sidebar-open');
                 
+                // Ensure sidebar content is scrollable with mouse
+                const sidebarContent = document.getElementById('sidebarContent');
+                if (sidebarContent) {
+                    sidebarContent.style.overflowY = 'auto';
+                    sidebarContent.scrollTop = 0; // Reset scroll position
+                }
+                
                 try {
                     const response = await fetch(project.url);
                     if (!response.ok) {
@@ -1062,6 +1085,12 @@
                 document.getElementById('commandInput').addEventListener('keydown', (e) => this.handleCommandInput(e));
                 window.addEventListener('resize', () => this.updateCursorPosition());
                 window.addEventListener('scroll', () => this.updateCursorPosition());
+                
+                // Ensure mouse wheel scrolling works properly
+                window.addEventListener('wheel', (e) => {
+                    // Don't prevent default - allow normal scrolling
+                    // The passive: true flag ensures smooth scrolling
+                }, { passive: true, capture: false });
             }
 
             bindTabEvents() {
@@ -1090,6 +1119,14 @@
                         }
                     }
                 });
+
+                // Enable normal mouse wheel scrolling in sidebar
+                const sidebarContent = document.getElementById('sidebarContent');
+                if (sidebarContent) {
+                    sidebarContent.addEventListener('wheel', (e) => {
+                        e.stopPropagation();
+                    }, { passive: true });
+                }
             }
 
             closeSidebar() {
@@ -1252,6 +1289,16 @@
 
             handleKeyPress(e) {
                 if (this.mode === 'command' || this.mode === 'search') return;
+                
+                // Disable keyboard navigation when sidebar is open to prevent interference
+                if (this.isSidebarMode && this.cursorState === 'sidebar') {
+                    // Only handle Escape key to close sidebar
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        this.closeSidebarAndRestoreCursor();
+                    }
+                    return;
+                }
                 
                 // Handle number prefixes for repeat counts
                 if (e.key >= '0' && e.key <= '9') {

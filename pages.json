@@ -40,14 +40,14 @@
         "title": "Blogs I Like",
         "links": [
           { "title": "Ben Kuhn", "url": "https://www.benkuhn.net/", "description": "An awesome SWE" },
-          { "title": "Lilian Weng", "url": "https://lilianweng.github.io/", "description": "ThinkingMachines blog" },
+          { "title": "Lilian Weng", "url": "https://lilianweng.github.io/", "description": "ThinkingMachines engineer + best ML explanations and deep dives on the internet" },
           { "title": "Melting Asphalt", "url": "https://meltingasphalt.com/", "description": "Thought-provoking essays" },
-          { "title": "Yao Yue", "url": "https://substack.com/@yaoyue", "description": "Yao Yue on Substack" },
-          { "title": "Extelligence", "url": "https://extelligence.substack.com/", "description": "Extelligence on Substack" },
+          { "title": "Yaw Baidu", "url": "https://substack.com/@yawboadu", "description": "Smart guy who writes about markets and history" },
+          { "title": "Extelligence", "url": "https://extelligence.substack.com/", "description": "Surreal writing from a talented (ex)Mathematician" },
           { "title": "Steve Hsu", "url": "https://stevehsu.substack.com/", "description": "Information Processing" },
-          { "title": "Irrational Analysis", "url": "https://irrationalanalysis.substack.com/", "description": "Irrational Analysis on Substack" },
-          { "title": "Bet On It", "url": "https://betonit.substack.com/", "description": "Bryan Caplan's blog" },
-          { "title": "Astral Codex Ten", "url": "https://astralcodexten.substack.com/", "description": "Scott Alexander's blog" },
+          { "title": "Irrational Analysis", "url": "https://irrationalanalysis.substack.com/", "description": "Semi-conductor investing advice but for smart degens" },
+          { "title": "Bet On It", "url": "https://betonit.substack.com/", "description": "Bryan Caplan's blog, thoughtful though quite combative" },
+          { "title": "Astral Codex Ten", "url": "https://astralcodexten.substack.com/", "description": "The best blog there is on the internet" },
           { "title": "Gwern", "url": "https://gwern.net/", "description": "Research and essays" }
         ]
       },
@@ -56,12 +56,12 @@
         "links": [
           { "title": "Lex Fridman Podcast", "url": "https://lexfridman.com/podcast/", "description": "AI and technology discussions" },
           { "title": "The Dwarkesh Podcast", "url": "https://www.dwarkeshpatel.com/podcast", "description": "Dwarkesh Patel's podcast" },
-          { "title": "Unsupervised Learning", "url": "https://danielmiessler.com/podcast/", "description": "Security and technology" },
-          { "title": "Complex Systems", "url": "https://www.complexsystems.org/", "description": "Patio11's podcast" },
+          { "title": "Unsupervised Learning", "url": "https://youtube.com/@RedpointAI", "description": "Interesting guests at the cutting edge of AI and automation" },
+          { "title": "Complex Systems", "url": "https://www.complexsystemspodcast.com/", "description": "Patio11's podcast" },
           { "title": "The History of Rome", "url": "https://thehistoryofrome.typepad.com/", "description": "Mike Duncan's history podcast" },
           { "title": "Liftoff", "url": "https://www.relay.fm/liftoff", "description": "Space podcast" },
           { "title": "Conversations with Tyler", "url": "https://conversationswithtyler.com/", "description": "Tyler Cowen's interviews" },
-          { "title": "Jonathan Bi", "url": "https://www.youtube.com/@JonathanBi", "description": "Philosophy and culture" },
+          { "title": "Jonathan Bi", "url": "https://www.youtube.com/@bi.johnathan", "description": "Philosophy and culture" },
           { "title": "Philosophize This!", "url": "https://philosophizethis.org/", "description": "Philosophy podcast" },
           { "title": "Acquired", "url": "https://www.acquired.fm/", "description": "Business and technology stories" }
         ]
