@@ -274,6 +274,12 @@
             box-shadow: 0 0 5px rgba(0, 255, 255, 0.5) !important;
         }
 
+        .cursor-hover-file {
+            background-color: #440066 !important;
+            border: 1px solid #ff00ff !important;
+            box-shadow: 0 0 5px rgba(255, 0, 255, 0.5) !important;
+        }
+
         .blog-sidebar {
             position: fixed;
             top: 0;
@@ -333,9 +339,11 @@
             flex: 1;
             padding: 1rem;
             overflow-y: auto;
+            overflow-x: hidden;
             color: #c0c0c0;
             font-family: 'Courier New', monospace;
             line-height: 1.6;
+            max-height: calc(100vh - 120px); /* Ensure it doesn't exceed viewport */
         }
 
         .sidebar-content h1,
@@ -554,11 +562,15 @@
 
     <div class="navigation" id="navigation">
         <div><strong>Vim Keys:</strong></div>
-        <div>j/k/h/l - move cursor</div>
+        <div>hjkl - move cursor</div>
+        <div>wbe - word movement</div>
+        <div>0$^ - line movement</div>
+        <div>gg/G - top/bottom</div>
+        <div>f/F - find character</div>
         <div>n/p - next/prev tab</div>
-        <div>/ - search in tab</div>
+        <div>/ - search</div>
         <div>: - command mode</div>
-        <div>? - help</div>
+        <div>? - full help</div>
     </div>
 
     <div class="command-line" id="commandLine">
@@ -618,6 +630,16 @@
                 this.lineHeight = 20;
                 this.charWidth = 8;
                 this.cursor = null;
+                this.cursorState = 'main'; // 'main' or 'sidebar'
+                this.savedCursorPosition = { x: 0, y: 0 };
+                
+                // Navigation state
+                this.repeatCount = 0;
+                this.awaitingGCommand = false;
+                this.findMode = false;
+                this.findChar = '';
+                this.lastFindChar = '';
+                this.lastFindDirection = 'forward';
                 
                 this.loadPagesData().then(() => {
                     this.init();
@@ -1081,6 +1103,22 @@
                 window.history.pushState({}, '', window.location.pathname);
             }
 
+            closeSidebarAndRestoreCursor() {
+                // Close the sidebar
+                this.closeSidebar();
+                
+                // Restore cursor to main content
+                this.cursorState = 'main';
+                this.cursorX = this.savedCursorPosition.x;
+                this.cursorY = this.savedCursorPosition.y;
+                
+                // Update cursor position
+                this.updateCursorPosition();
+                
+                // Show status
+                this.showStatus('Returned to main content');
+            }
+
             openFullscreen() {
                 if (this.currentBlogArticle) {
                     const blogUrl = `${window.location.origin}${window.location.pathname}?blog=${encodeURIComponent(this.currentBlogArticle.filename)}`;
@@ -1215,31 +1253,160 @@
             handleKeyPress(e) {
                 if (this.mode === 'command' || this.mode === 'search') return;
                 
+                // Handle number prefixes for repeat counts
+                if (e.key >= '0' && e.key <= '9') {
+                    e.preventDefault();
+                    this.repeatCount = this.repeatCount * 10 + parseInt(e.key);
+                    this.showStatus(`Repeat count: ${this.repeatCount}`);
+                    return;
+                }
+                
+                // Get repeat count (default to 1)
+                const count = Math.max(1, this.repeatCount);
+                this.repeatCount = 0; // Reset after use
+                
+                // Handle find mode
+                if (this.findMode) {
+                    if (e.key === 'Escape') {
+                        this.findMode = false;
+                        this.showStatus('Find cancelled');
+                        return;
+                    }
+                    if (e.key.length === 1) {
+                        this.findChar = e.key;
+                        this.lastFindChar = e.key;
+                        this.findMode = false;
+                        this.findNextChar(this.findChar, this.lastFindDirection);
+                        return;
+                    }
+                    return;
+                }
+                
+                // Handle awaiting second 'g' for 'gg' command
+                if (this.awaitingGCommand) {
+                    this.awaitingGCommand = false;
+                    if (e.key === 'g') {
+                        e.preventDefault();
+                        this.scrollToTop();
+                        return;
+                    }
+                    // If not 'g', fall through to handle the key normally
+                }
+                
                 switch(e.key) {
+                    // Basic movement (hjkl)
                     case 'j':
                         e.preventDefault();
-                        this.moveCursorDown();
+                        this.repeatAction(() => this.moveCursorDown(), count);
                         break;
                     case 'k':
                         e.preventDefault();
-                        this.moveCursorUp();
+                        this.repeatAction(() => this.moveCursorUp(), count);
                         break;
                     case 'h':
                         e.preventDefault();
-                        this.moveCursorLeft();
+                        this.repeatAction(() => this.moveCursorLeft(), count);
                         break;
                     case 'l':
                         e.preventDefault();
-                        this.moveCursorRight();
+                        this.repeatAction(() => this.moveCursorRight(), count);
                         break;
+                    
+                    // Word movement
+                    case 'w':
+                        e.preventDefault();
+                        this.repeatAction(() => this.moveToNextWord(), count);
+                        break;
+                    case 'b':
+                        e.preventDefault();
+                        this.repeatAction(() => this.moveToPrevWord(), count);
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        this.repeatAction(() => this.moveToEndOfWord(), count);
+                        break;
+                    
+                    // Line movement
+                    case '0':
+                        e.preventDefault();
+                        this.moveToLineStart();
+                        break;
+                    case '$':
+                        e.preventDefault();
+                        this.moveToLineEnd();
+                        break;
+                    case '^':
+                        e.preventDefault();
+                        this.moveToFirstNonWhitespace();
+                        break;
+                    
+                    // Page movement
+                    case 'PageDown':
+                        e.preventDefault();
+                        this.pageDown();
+                        break;
+                    case 'PageUp':
+                        e.preventDefault();
+                        this.pageUp();
+                        break;
+                    
+                    // Scrolling
                     case 'g':
                         e.preventDefault();
-                        this.scrollToTop();
+                        this.awaitingGCommand = true;
+                        this.showStatus('Press g again for top of document');
                         break;
                     case 'G':
                         e.preventDefault();
-                        this.scrollToBottom();
+                        if (count > 1) {
+                            this.goToLine(count);
+                        } else {
+                            this.scrollToBottom();
+                        }
                         break;
+                    
+                    // Find character
+                    case 'f':
+                        e.preventDefault();
+                        this.lastFindDirection = 'forward';
+                        this.findMode = true;
+                        this.showStatus('Find character (forward): ');
+                        break;
+                    case 'F':
+                        e.preventDefault();
+                        this.lastFindDirection = 'backward';
+                        this.findMode = true;
+                        this.showStatus('Find character (backward): ');
+                        break;
+                    case ';':
+                        e.preventDefault();
+                        if (this.lastFindChar) {
+                            this.findNextChar(this.lastFindChar, this.lastFindDirection);
+                        }
+                        break;
+                    case ',':
+                        e.preventDefault();
+                        if (this.lastFindChar) {
+                            const oppositeDir = this.lastFindDirection === 'forward' ? 'backward' : 'forward';
+                            this.findNextChar(this.lastFindChar, oppositeDir);
+                        }
+                        break;
+                    
+                    // Scroll commands
+                    case 'u':
+                        if (e.ctrlKey) {
+                            e.preventDefault();
+                            this.scrollUp();
+                        }
+                        break;
+                    case 'd':
+                        if (e.ctrlKey) {
+                            e.preventDefault();
+                            this.scrollDown();
+                        }
+                        break;
+                    
+                    // Search and navigation
                     case '/':
                         e.preventDefault();
                         this.enterSearchMode();
@@ -1252,10 +1419,20 @@
                             this.nextSection();
                         }
                         break;
+                    case 'N':
+                        e.preventDefault();
+                        if (this.searchMatches.length > 0) {
+                            this.prevMatch();
+                        } else {
+                            this.prevSection();
+                        }
+                        break;
                     case 'p':
                         e.preventDefault();
                         this.prevSection();
                         break;
+                    
+                    // Command mode
                     case ':':
                         e.preventDefault();
                         this.enterCommandMode();
@@ -1264,13 +1441,49 @@
                         e.preventDefault();
                         this.showHelp();
                         break;
+                    
+                    // Actions
                     case 'Enter':
                         e.preventDefault();
                         this.handleEnterPress();
                         break;
                     case 'Escape':
                         e.preventDefault();
-                        this.exitMode();
+                        if (this.cursorState === 'sidebar') {
+                            this.closeSidebarAndRestoreCursor();
+                        } else {
+                            this.exitMode();
+                        }
+                        break;
+                    
+                    // Additional vim-like keys
+                    case 'o':
+                        e.preventDefault();
+                        this.openLinkOrItem();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        this.refreshCurrentSection();
+                        break;
+                    case 'H':
+                        e.preventDefault();
+                        this.moveToTop();
+                        break;
+                    case 'M':
+                        e.preventDefault();
+                        this.moveToMiddle();
+                        break;
+                    case 'L':
+                        e.preventDefault();
+                        this.moveToBottom();
+                        break;
+                    case 'x':
+                        e.preventDefault();
+                        this.deleteUnderCursor();
+                        break;
+                    case 'y':
+                        e.preventDefault();
+                        this.copyUnderCursor();
                         break;
                 }
             }
@@ -1305,21 +1518,317 @@
                 this.updateActiveSection();
             }
 
+            // New navigation methods
+            repeatAction(action, count) {
+                for (let i = 0; i < count; i++) {
+                    action();
+                }
+            }
+
+            moveToNextWord() {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) return;
+                
+                // Simple word movement - move to next space or punctuation
+                const textContent = activeTab.textContent;
+                const currentPos = this.getTextPosition();
+                const nextSpace = textContent.indexOf(' ', currentPos + 1);
+                const nextPunct = textContent.search(/[.!?,:;]/, currentPos + 1);
+                
+                let targetPos = nextSpace;
+                if (nextPunct !== -1 && (nextSpace === -1 || nextPunct < nextSpace)) {
+                    targetPos = nextPunct;
+                }
+                
+                if (targetPos !== -1) {
+                    this.moveToTextPosition(targetPos);
+                } else {
+                    this.moveToLineEnd();
+                }
+            }
+
+            moveToPrevWord() {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) return;
+                
+                const textContent = activeTab.textContent;
+                const currentPos = this.getTextPosition();
+                const prevSpace = textContent.lastIndexOf(' ', currentPos - 1);
+                const prevPunct = textContent.search(/[.!?,:;](?=[^.!?,:;]*$)/, currentPos - 1);
+                
+                let targetPos = prevSpace;
+                if (prevPunct !== -1 && (prevSpace === -1 || prevPunct > prevSpace)) {
+                    targetPos = prevPunct;
+                }
+                
+                if (targetPos !== -1) {
+                    this.moveToTextPosition(targetPos);
+                } else {
+                    this.moveToLineStart();
+                }
+            }
+
+            moveToEndOfWord() {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) return;
+                
+                const textContent = activeTab.textContent;
+                const currentPos = this.getTextPosition();
+                const nextSpace = textContent.indexOf(' ', currentPos + 1);
+                
+                if (nextSpace !== -1) {
+                    this.moveToTextPosition(nextSpace - 1);
+                } else {
+                    this.moveToLineEnd();
+                }
+            }
+
+            moveToLineStart() {
+                this.cursorX = 0;
+                this.updateCursorPosition();
+            }
+
+            moveToLineEnd() {
+                // Find the length of the current line
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) return;
+                
+                const lines = activeTab.textContent.split('\n');
+                const currentLine = Math.min(this.cursorY, lines.length - 1);
+                const lineLength = lines[currentLine] ? lines[currentLine].length : 0;
+                
+                this.cursorX = lineLength;
+                this.updateCursorPosition();
+            }
+
+            moveToFirstNonWhitespace() {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) return;
+                
+                const lines = activeTab.textContent.split('\n');
+                const currentLine = Math.min(this.cursorY, lines.length - 1);
+                const lineContent = lines[currentLine] || '';
+                
+                const firstNonWhitespace = lineContent.search(/\S/);
+                this.cursorX = Math.max(0, firstNonWhitespace);
+                this.updateCursorPosition();
+            }
+
+            pageDown() {
+                const viewportHeight = window.innerHeight;
+                const scrollAmount = viewportHeight * 0.8; // 80% of viewport
+                window.scrollBy(0, scrollAmount);
+                this.cursorY += Math.floor(scrollAmount / this.lineHeight);
+                this.updateCursorPosition();
+            }
+
+            pageUp() {
+                const viewportHeight = window.innerHeight;
+                const scrollAmount = viewportHeight * 0.8;
+                window.scrollBy(0, -scrollAmount);
+                this.cursorY -= Math.floor(scrollAmount / this.lineHeight);
+                this.cursorY = Math.max(0, this.cursorY);
+                this.updateCursorPosition();
+            }
+
+            scrollUp() {
+                const scrollAmount = window.innerHeight * 0.5;
+                window.scrollBy(0, -scrollAmount);
+                this.cursorY -= Math.floor(scrollAmount / this.lineHeight);
+                this.cursorY = Math.max(0, this.cursorY);
+                this.updateCursorPosition();
+            }
+
+            scrollDown() {
+                const scrollAmount = window.innerHeight * 0.5;
+                window.scrollBy(0, scrollAmount);
+                this.cursorY += Math.floor(scrollAmount / this.lineHeight);
+                this.updateCursorPosition();
+            }
+
+            goToLine(lineNum) {
+                this.cursorY = lineNum - 1; // Convert to 0-based
+                this.cursorX = 0;
+                this.updateCursorPosition();
+                
+                // Scroll to make line visible
+                const targetScroll = this.cursorY * this.lineHeight;
+                window.scrollTo(0, targetScroll);
+            }
+
+            findNextChar(char, direction) {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) return;
+                
+                const textContent = activeTab.textContent;
+                const currentPos = this.getTextPosition();
+                
+                let targetPos = -1;
+                if (direction === 'forward') {
+                    targetPos = textContent.indexOf(char, currentPos + 1);
+                } else {
+                    targetPos = textContent.lastIndexOf(char, currentPos - 1);
+                }
+                
+                if (targetPos !== -1) {
+                    this.moveToTextPosition(targetPos);
+                    this.showStatus(`Found '${char}' at position ${targetPos}`);
+                } else {
+                    this.showStatus(`'${char}' not found`);
+                }
+            }
+
+            moveToTop() {
+                const viewportTop = window.pageYOffset;
+                const topLineY = Math.floor(viewportTop / this.lineHeight);
+                this.cursorY = topLineY;
+                this.cursorX = 0;
+                this.updateCursorPosition();
+            }
+
+            moveToMiddle() {
+                const viewportTop = window.pageYOffset;
+                const viewportHeight = window.innerHeight;
+                const middleLineY = Math.floor((viewportTop + viewportHeight / 2) / this.lineHeight);
+                this.cursorY = middleLineY;
+                this.cursorX = 0;
+                this.updateCursorPosition();
+            }
+
+            moveToBottom() {
+                const viewportTop = window.pageYOffset;
+                const viewportHeight = window.innerHeight;
+                const bottomLineY = Math.floor((viewportTop + viewportHeight) / this.lineHeight);
+                this.cursorY = bottomLineY;
+                this.cursorX = 0;
+                this.updateCursorPosition();
+            }
+
+            openLinkOrItem() {
+                // Same as Enter key functionality
+                this.handleEnterPress();
+            }
+
+            refreshCurrentSection() {
+                const currentSectionName = this.sections[this.currentSection];
+                this.showStatus(`Refreshing ${currentSectionName} section...`);
+                
+                // Refresh the current section content
+                switch(currentSectionName) {
+                    case 'blog':
+                        this.generateBlogContent();
+                        break;
+                    case 'projects':
+                        this.generateProjectsContent();
+                        break;
+                    case 'books':
+                        this.generateBooksContent();
+                        break;
+                    case 'awesome-links':
+                        this.generateAwesomeLinksContent();
+                        break;
+                    case 'configs':
+                        this.generateConfigsContent();
+                        break;
+                    default:
+                        this.generateAboutContent();
+                }
+            }
+
+            deleteUnderCursor() {
+                // For this website, we'll just show what's under the cursor
+                const element = this.getElementAtCursor();
+                if (element) {
+                    const text = element.textContent.trim();
+                    this.showStatus(`Cannot delete: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+                }
+            }
+
+            copyUnderCursor() {
+                // Copy text under cursor to clipboard
+                const element = this.getElementAtCursor();
+                if (element) {
+                    const text = element.textContent.trim();
+                    navigator.clipboard.writeText(text).then(() => {
+                        this.showStatus(`Copied: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+                    }).catch(() => {
+                        this.showStatus('Failed to copy to clipboard');
+                    });
+                }
+            }
+
+            // Helper methods
+            getTextPosition() {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) return 0;
+                
+                const lines = activeTab.textContent.split('\n');
+                let position = 0;
+                
+                for (let i = 0; i < Math.min(this.cursorY, lines.length); i++) {
+                    position += lines[i].length + 1; // +1 for newline
+                }
+                
+                position += Math.min(this.cursorX, lines[this.cursorY]?.length || 0);
+                return position;
+            }
+
+            moveToTextPosition(position) {
+                const activeTab = document.querySelector('.tab-content.active');
+                if (!activeTab) return;
+                
+                const lines = activeTab.textContent.split('\n');
+                let currentPos = 0;
+                let targetY = 0;
+                let targetX = 0;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const lineLength = lines[i].length + 1; // +1 for newline
+                    
+                    if (currentPos + lineLength > position) {
+                        targetY = i;
+                        targetX = position - currentPos;
+                        break;
+                    }
+                    
+                    currentPos += lineLength;
+                }
+                
+                this.cursorY = targetY;
+                this.cursorX = targetX;
+                this.updateCursorPosition();
+            }
+
+            prevMatch() {
+                if (this.searchMatches.length === 0) return;
+                
+                if (this.currentMatchIndex >= 0) {
+                    this.searchMatches[this.currentMatchIndex].classList.remove('current');
+                }
+                
+                this.currentMatchIndex = (this.currentMatchIndex - 1 + this.searchMatches.length) % this.searchMatches.length;
+                this.highlightCurrentMatch();
+            }
+
             initializeCursor() {
                 // Position cursor at the first text character
                 this.positionCursorAtFirstText();
             }
 
             updateCursorPosition() {
-                const container = document.querySelector('.container');
-                const containerRect = container.getBoundingClientRect();
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                this.cursor.style.left = (containerRect.left + this.cursorX * this.charWidth) + 'px';
-                this.cursor.style.top = (containerRect.top + scrollTop + this.cursorY * this.lineHeight) + 'px';
-                
-                // Auto-scroll to keep cursor visible
-                this.ensureCursorVisible();
+                if (this.cursorState === 'sidebar') {
+                    this.updateCursorPositionForSidebar();
+                } else {
+                    const container = document.querySelector('.container');
+                    const containerRect = container.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    this.cursor.style.left = (containerRect.left + this.cursorX * this.charWidth) + 'px';
+                    this.cursor.style.top = (containerRect.top + scrollTop + this.cursorY * this.lineHeight) + 'px';
+                    
+                    // Auto-scroll to keep cursor visible
+                    this.ensureCursorVisible();
+                }
                 
                 // Check for hover states after position update
                 setTimeout(() => this.updateCursorHover(), 0);
@@ -1344,22 +1853,39 @@
             }
 
             moveCursorUp() {
-                this.cursorY = Math.max(0, this.cursorY - 1);
+                if (this.cursorState === 'sidebar') {
+                    this.cursorY = Math.max(0, this.cursorY - 1);
+                } else {
+                    this.cursorY = Math.max(0, this.cursorY - 1);
+                }
                 this.updateCursorPosition();
             }
 
             moveCursorDown() {
-                this.cursorY++;
+                if (this.cursorState === 'sidebar') {
+                    // In sidebar, allow unlimited down movement
+                    this.cursorY++;
+                } else {
+                    this.cursorY++;
+                }
                 this.updateCursorPosition();
             }
 
             moveCursorLeft() {
-                this.cursorX = Math.max(0, this.cursorX - 1);
+                if (this.cursorState === 'sidebar') {
+                    this.cursorX = Math.max(0, this.cursorX - 1);
+                } else {
+                    this.cursorX = Math.max(0, this.cursorX - 1);
+                }
                 this.updateCursorPosition();
             }
 
             moveCursorRight() {
-                this.cursorX++;
+                if (this.cursorState === 'sidebar') {
+                    this.cursorX++;
+                } else {
+                    this.cursorX++;
+                }
                 this.updateCursorPosition();
             }
 
@@ -1386,11 +1912,143 @@
                 return element && (element.classList.contains('tab') || element.closest('.tab'));
             }
 
+            isOverBlogItem() {
+                const element = this.getElementAtCursor();
+                return element && (element.classList.contains('blog-file-item') || element.closest('.blog-file-item'));
+            }
+
+            isOverProjectItem() {
+                const element = this.getElementAtCursor();
+                return element && (element.classList.contains('project-file-item') || element.closest('.project-file-item'));
+            }
+
+            isOverConfigItem() {
+                const element = this.getElementAtCursor();
+                return element && (element.classList.contains('config-file-item') || element.closest('.config-file-item'));
+            }
+
+            getHoveredItem() {
+                const element = this.getElementAtCursor();
+                if (!element) return null;
+
+                // Find the closest file item
+                const blogItem = element.closest('.blog-file-item');
+                const projectItem = element.closest('.project-file-item');
+                const configItem = element.closest('.config-file-item');
+
+                if (blogItem) {
+                    // Find the corresponding blog post
+                    const index = Array.from(blogItem.parentElement.children).indexOf(blogItem);
+                    return { type: 'blog', item: this.blogPosts[index], element: blogItem };
+                }
+                
+                if (projectItem) {
+                    // Find the corresponding project
+                    const index = Array.from(projectItem.parentElement.children).indexOf(projectItem);
+                    return { type: 'project', item: this.projects[index], element: projectItem };
+                }
+                
+                if (configItem) {
+                    // Find the corresponding config
+                    const index = Array.from(configItem.parentElement.children).indexOf(configItem);
+                    return { type: 'config', item: this.configs[index], element: configItem };
+                }
+
+                return null;
+            }
+
             handleEnterPress() {
+                if (this.cursorState === 'sidebar') {
+                    // In sidebar mode, Enter doesn't do anything (let user read)
+                    return;
+                }
+
                 if (this.isOverLink()) {
                     this.openLinkAtCursor();
                 } else if (this.isOverTab()) {
                     this.switchToTabAtCursor();
+                } else {
+                    // Check if over a file item
+                    const hoveredItem = this.getHoveredItem();
+                    if (hoveredItem) {
+                        this.openItemInSidebar(hoveredItem);
+                    }
+                }
+            }
+
+            openItemInSidebar(hoveredItem) {
+                // Save current cursor position
+                this.savedCursorPosition = { x: this.cursorX, y: this.cursorY };
+
+                // Open the appropriate sidebar
+                switch (hoveredItem.type) {
+                    case 'blog':
+                        this.openBlogArticle(hoveredItem.item);
+                        break;
+                    case 'project':
+                        this.openProjectArticle(hoveredItem.item);
+                        break;
+                    case 'config':
+                        this.openConfigFile(hoveredItem.item);
+                        break;
+                }
+
+                // Switch cursor to sidebar mode
+                this.cursorState = 'sidebar';
+                this.moveCursorToSidebar();
+            }
+
+            moveCursorToSidebar() {
+                // Wait for sidebar to be fully rendered
+                setTimeout(() => {
+                    const sidebar = document.getElementById('blogSidebar');
+                    const sidebarContent = document.getElementById('sidebarContent');
+                    
+                    if (sidebar && sidebarContent) {
+                        // Position cursor at start of sidebar content with some padding
+                        this.cursorX = 2; // Small offset from left edge
+                        this.cursorY = 2; // Small offset from top edge
+                        
+                        // Update cursor position relative to sidebar
+                        this.updateCursorPositionForSidebar();
+                    }
+                }, 100);
+            }
+
+            updateCursorPositionForSidebar() {
+                if (this.cursorState !== 'sidebar') return;
+                
+                const sidebar = document.getElementById('blogSidebar');
+                if (!sidebar) return;
+                
+                const sidebarRect = sidebar.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                this.cursor.style.left = (sidebarRect.left + this.cursorX * this.charWidth) + 'px';
+                this.cursor.style.top = (sidebarRect.top + scrollTop + this.cursorY * this.lineHeight) + 'px';
+                
+                // Auto-scroll sidebar if needed
+                this.ensureCursorVisibleInSidebar();
+            }
+
+            ensureCursorVisibleInSidebar() {
+                const sidebarContent = document.getElementById('sidebarContent');
+                if (!sidebarContent) return;
+                
+                const cursorRect = this.cursor.getBoundingClientRect();
+                const sidebarRect = sidebarContent.getBoundingClientRect();
+                const scrollBuffer = 50;
+                
+                // Check if cursor is below visible sidebar area
+                if (cursorRect.bottom > sidebarRect.bottom - scrollBuffer) {
+                    const scrollAmount = cursorRect.bottom - (sidebarRect.bottom - scrollBuffer);
+                    sidebarContent.scrollTop += scrollAmount;
+                }
+                
+                // Check if cursor is above visible sidebar area
+                if (cursorRect.top < sidebarRect.top + scrollBuffer) {
+                    const scrollAmount = (sidebarRect.top + scrollBuffer) - cursorRect.top;
+                    sidebarContent.scrollTop -= scrollAmount;
                 }
             }
 
@@ -1414,14 +2072,18 @@
 
             updateCursorHover() {
                 // Clear previous hover states
-                this.cursor.classList.remove('cursor-hover-link', 'cursor-hover-tab');
+                this.cursor.classList.remove('cursor-hover-link', 'cursor-hover-tab', 'cursor-hover-file');
+                
+                if (this.cursorState === 'sidebar') {
+                    this.showStatus('SIDEBAR MODE | Use j/k to navigate, Esc to return to main content');
+                    return;
+                }
                 
                 if (this.isOverLink()) {
                     this.cursor.classList.add('cursor-hover-link');
                     const element = this.getElementAtCursor();
                     const link = element.tagName === 'A' ? element : element.closest('a');
                     const linkText = link.textContent.trim();
-                    const linkUrl = link.href;
                     this.showStatus(`Link: "${linkText}" - Press Enter to open in new tab`);
                 } else if (this.isOverTab()) {
                     this.cursor.classList.add('cursor-hover-tab');
@@ -1430,8 +2092,16 @@
                     const tabName = tab.textContent.trim();
                     this.showStatus(`Tab: "${tabName}" - Press Enter to switch`);
                 } else {
-                    // Clear status if not over interactive element
-                    this.showStatus('NORMAL MODE | Press ? for help');
+                    // Check if over a file item
+                    const hoveredItem = this.getHoveredItem();
+                    if (hoveredItem) {
+                        this.cursor.classList.add('cursor-hover-file');
+                        const itemType = hoveredItem.type.charAt(0).toUpperCase() + hoveredItem.type.slice(1);
+                        this.showStatus(`${itemType}: "${hoveredItem.item.title}" - Press Enter to open in sidebar`);
+                    } else {
+                        // Clear status if not over interactive element
+                        this.showStatus('NORMAL MODE | Press ? for help');
+                    }
                 }
             }
 
@@ -1667,7 +2337,14 @@
             }
 
             showHelp() {
-                this.showStatus('Commands: a/about | b/blog | bk/books | l/links | Keys: j/k/n/p/:/? | Click tabs | Esc:exit');
+                const helpText = `Navigation: hjkl (move) | wbe (word) | 0$^ (line) | gg/G (top/bottom) | HML (screen) | 
+Page: PageUp/PageDown | Ctrl+u/d (scroll) | f/F (find char) | ;/, (repeat find) | 
+Search: / (search) | n/N (next/prev match) | 
+Tabs: np (prev/next tab) | 
+Actions: Enter (open) | o (open) | r (refresh) | xy (copy) | 
+Numbers: 5j (repeat) | 15G (go to line) | 
+Mode: : (command) | Esc (exit/return) | ? (help)`;
+                this.showStatus(helpText);
             }
 
             exitMode() {
