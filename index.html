@@ -140,52 +140,6 @@
             color: #00ff00;
         }
 
-        .navigation {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #333;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .navigation:hover {
-            opacity: 1;
-        }
-
-        .navigation div {
-            margin: 2px 0;
-        }
-
-        .command-line {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #000;
-            color: #00ff00;
-            padding: 10px;
-            font-family: 'Courier New', monospace;
-            display: none;
-            border-top: 1px solid #333;
-        }
-
-        .command-line.active {
-            display: block;
-        }
-
-        .command-input {
-            background: transparent;
-            border: none;
-            color: #00ff00;
-            font-family: inherit;
-            font-size: inherit;
-            outline: none;
-            width: 100%;
-        }
 
         .highlight {
             background: #333;
@@ -203,82 +157,13 @@
             text-decoration: underline;
         }
 
-        .status-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: #333;
-            color: #00ff00;
-            padding: 5px 20px;
-            font-size: 0.8rem;
-            display: none;
-        }
-
-        .status-bar.active {
-            display: block;
-        }
 
         @media (max-width: 600px) {
             .container {
                 padding: 1rem;
             }
-            
-            .navigation {
-                position: static;
-                margin-top: 2rem;
-                opacity: 1;
-            }
         }
 
-        .search-highlight {
-            background-color: #d7a600;
-            color: #000;
-            border-radius: 3px;
-        }
-
-        .search-highlight.current {
-            background-color: #ff0000;
-        }
-
-        .cursor {
-            position: absolute;
-            width: 8px;
-            height: 20px;
-            background-color: #00ff00;
-            border: 1px solid #00ff00;
-            z-index: 1000;
-            pointer-events: none;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-
-        .cursor.solid {
-            animation: none;
-            opacity: 1;
-        }
-
-        .cursor-hover-link {
-            background-color: #004400 !important;
-            border: 1px solid #00ff00 !important;
-            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5) !important;
-        }
-
-        .cursor-hover-tab {
-            background-color: #004466 !important;
-            border: 1px solid #00ffff !important;
-            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5) !important;
-        }
-
-        .cursor-hover-file {
-            background-color: #440066 !important;
-            border: 1px solid #ff00ff !important;
-            box-shadow: 0 0 5px rgba(255, 0, 255, 0.5) !important;
-        }
 
         .blog-sidebar {
             position: fixed;
@@ -484,10 +369,6 @@
     </style>
 </head>
 <body>
-    <div class="status-bar" id="statusBar">
-        NORMAL MODE | Press ? for help
-    </div>
-
     <div class="container">
         <div class="header">
             <h1>Noryve Freeman</h1>
@@ -562,25 +443,6 @@
         </div>
     </div>
 
-    <div class="navigation" id="navigation">
-        <div><strong>Vim Keys:</strong></div>
-        <div>hjkl - move cursor</div>
-        <div>wbe - word movement</div>
-        <div>0$^ - line movement</div>
-        <div>gg/G - top/bottom</div>
-        <div>f/F - find character</div>
-        <div>n/p - next/prev tab</div>
-        <div>/ - search</div>
-        <div>: - command mode</div>
-        <div>? - full help</div>
-    </div>
-
-    <div class="command-line" id="commandLine">
-        <span>:</span><input type="text" class="command-input" id="commandInput" placeholder="Enter command">
-    </div>
-
-    <div class="cursor" id="cursor"></div>
-
     <!-- Blog Article Sidebar -->
     <div class="blog-sidebar" id="blogSidebar">
         <div class="sidebar-header">
@@ -596,53 +458,30 @@
     </div>
 
     <script>
-        // Vim-inspired functionality
-        class VimSite {
+        // Website functionality
+        class Website {
             constructor() {
-                this.mode = 'normal';
                 this.sections = ['about', 'blog', 'books', 'awesome-links', 'configs', 'projects'];
                 this.currentSection = 0;
-                this.searchTerm = '';
-                this.searchMatches = [];
-                this.currentMatchIndex = -1;
-                this.scrollSpeed = 50;
-                
+
                 // Data loaded from pages.json
                 this.pagesData = null;
                 this.books = null;
                 this.awesomeLinks = null;
                 this.configs = null;
-                
+
                 // Blog configuration
                 this.blogPosts = [];
                 this.blogIndexUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/index.txt";
                 this.blogBaseUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/";
-                
+
                 // Projects configuration
                 this.projects = [];
                 this.projectsUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/projects/projects.json";
                 this.projectsBaseUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/projects/";
                 this.currentBlogArticle = null;
-                this.isSidebarMode = false;
                 this.currentConfig = null;
-                
-                // Cursor position tracking
-                this.cursorX = 0;
-                this.cursorY = 0;
-                this.lineHeight = 20;
-                this.charWidth = 8;
-                this.cursor = null;
-                this.cursorState = 'main'; // 'main' or 'sidebar'
-                this.savedCursorPosition = { x: 0, y: 0 };
-                
-                // Navigation state
-                this.repeatCount = 0;
-                this.awaitingGCommand = false;
-                this.findMode = false;
-                this.findChar = '';
-                this.lastFindChar = '';
-                this.lastFindDirection = 'forward';
-                
+
                 this.loadPagesData().then(() => {
                     this.init();
                 });
@@ -779,40 +618,39 @@
 
             async openBlogArticle(post) {
                 this.currentBlogArticle = post;
-                this.isSidebarMode = true;
-                
+
                 // Update URL for direct linking
                 const blogUrl = `${window.location.origin}${window.location.pathname}?blog=${encodeURIComponent(post.filename)}`;
                 window.history.pushState({}, '', blogUrl);
-                
+
                 // Update sidebar title
                 document.getElementById('sidebarTitle').textContent = post.title;
-                
+
                 // Show loading state
                 document.getElementById('sidebarContent').innerHTML = '<p>Loading article...</p>';
-                
+
                 // Show sidebar
                 document.getElementById('blogSidebar').classList.add('active');
                 document.querySelector('.container').classList.add('sidebar-open');
-                
+
                 // Ensure sidebar content is scrollable with mouse
                 const sidebarContent = document.getElementById('sidebarContent');
                 if (sidebarContent) {
                     sidebarContent.style.overflowY = 'auto';
                     sidebarContent.scrollTop = 0; // Reset scroll position
                 }
-                
+
                 try {
                     const response = await fetch(post.url);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const markdown = await response.text();
-                    
+
                     // Convert markdown to HTML (basic conversion)
                     const html = this.markdownToHtml(markdown);
                     document.getElementById('sidebarContent').innerHTML = html;
-                    
+
                 } catch (error) {
                     document.getElementById('sidebarContent').innerHTML = '<p>Error loading article. Please try again later.</p>';
                     console.error('Error loading article:', error);
@@ -842,22 +680,21 @@
 
             openConfigFile(config) {
                 this.currentConfig = config;
-                this.isSidebarMode = true;
-                
+
                 // Update sidebar title
                 document.getElementById('sidebarTitle').textContent = config.title;
-                
+
                 // Show sidebar
                 document.getElementById('blogSidebar').classList.add('active');
                 document.querySelector('.container').classList.add('sidebar-open');
-                
+
                 // Ensure sidebar content is scrollable with mouse
                 const sidebarContent = document.getElementById('sidebarContent');
                 if (sidebarContent) {
                     sidebarContent.style.overflowY = 'auto';
                     sidebarContent.scrollTop = 0; // Reset scroll position
                 }
-                
+
                 // Display config content with syntax highlighting
                 const formattedContent = this.formatConfigContent(config.content, config.type);
                 document.getElementById('sidebarContent').innerHTML = formattedContent;
@@ -1028,40 +865,39 @@
 
             async openProjectArticle(project) {
                 this.currentBlogArticle = project;
-                this.isSidebarMode = true;
-                
+
                 // Update URL for direct linking
                 const projectUrl = `${window.location.origin}${window.location.pathname}?project=${encodeURIComponent(project.filename)}`;
                 window.history.pushState({}, '', projectUrl);
-                
+
                 // Update sidebar title
                 document.getElementById('sidebarTitle').textContent = project.title;
-                
+
                 // Show loading state
                 document.getElementById('sidebarContent').innerHTML = '<p>Loading project...</p>';
-                
+
                 // Show sidebar
                 document.getElementById('blogSidebar').classList.add('active');
                 document.querySelector('.container').classList.add('sidebar-open');
-                
+
                 // Ensure sidebar content is scrollable with mouse
                 const sidebarContent = document.getElementById('sidebarContent');
                 if (sidebarContent) {
                     sidebarContent.style.overflowY = 'auto';
                     sidebarContent.scrollTop = 0; // Reset scroll position
                 }
-                
+
                 try {
                     const response = await fetch(project.url);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const markdown = await response.text();
-                    
+
                     // Convert markdown to HTML
                     const html = this.markdownToHtml(markdown);
                     document.getElementById('sidebarContent').innerHTML = html;
-                    
+
                 } catch (error) {
                     document.getElementById('sidebarContent').innerHTML = '<p>Error loading project. Please try again later.</p>';
                     console.error('Error loading project:', error);
@@ -1069,28 +905,11 @@
             }
 
             init() {
-                this.cursor = document.getElementById('cursor');
                 this.generateContent();
-                this.bindEvents();
                 this.bindTabEvents();
                 this.bindSidebarEvents();
                 this.handleUrlRouting();
                 this.showTab('about');
-                this.initializeCursor();
-                this.showStatus('NORMAL MODE | Press ? for help');
-            }
-
-            bindEvents() {
-                document.addEventListener('keydown', (e) => this.handleKeyPress(e));
-                document.getElementById('commandInput').addEventListener('keydown', (e) => this.handleCommandInput(e));
-                window.addEventListener('resize', () => this.updateCursorPosition());
-                window.addEventListener('scroll', () => this.updateCursorPosition());
-                
-                // Ensure mouse wheel scrolling works properly
-                window.addEventListener('wheel', (e) => {
-                    // Don't prevent default - allow normal scrolling
-                    // The passive: true flag ensures smooth scrolling
-                }, { passive: true, capture: false });
             }
 
             bindTabEvents() {
@@ -1112,48 +931,24 @@
 
                 // Close sidebar when clicking outside
                 document.addEventListener('click', (e) => {
-                    if (this.isSidebarMode && !document.getElementById('blogSidebar').contains(e.target)) {
+                    const sidebar = document.getElementById('blogSidebar');
+                    if (sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
                         // Don't close if clicking on blog file items, config file items, or project file items
                         if (!e.target.closest('.blog-file-item') && !e.target.closest('.config-file-item') && !e.target.closest('.project-file-item')) {
                             this.closeSidebar();
                         }
                     }
                 });
-
-                // Enable normal mouse wheel scrolling in sidebar
-                const sidebarContent = document.getElementById('sidebarContent');
-                if (sidebarContent) {
-                    sidebarContent.addEventListener('wheel', (e) => {
-                        e.stopPropagation();
-                    }, { passive: true });
-                }
             }
 
             closeSidebar() {
                 document.getElementById('blogSidebar').classList.remove('active');
                 document.querySelector('.container').classList.remove('sidebar-open');
-                this.isSidebarMode = false;
                 this.currentBlogArticle = null;
                 this.currentConfig = null;
-                
+
                 // Update URL to remove blog article
                 window.history.pushState({}, '', window.location.pathname);
-            }
-
-            closeSidebarAndRestoreCursor() {
-                // Close the sidebar
-                this.closeSidebar();
-                
-                // Restore cursor to main content
-                this.cursorState = 'main';
-                this.cursorX = this.savedCursorPosition.x;
-                this.cursorY = this.savedCursorPosition.y;
-                
-                // Update cursor position
-                this.updateCursorPosition();
-                
-                // Show status
-                this.showStatus('Returned to main content');
             }
 
             openFullscreen() {
@@ -1260,1188 +1055,34 @@
             showTab(tabName) {
                 // Update current section index
                 this.currentSection = this.sections.indexOf(tabName);
-                
+
                 // Hide all tab contents
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.classList.remove('active');
                 });
-                
+
                 // Remove active class from all tabs
                 document.querySelectorAll('.tab').forEach(tab => {
                     tab.classList.remove('active');
                 });
-                
+
                 // Show selected tab content
                 document.getElementById(tabName).classList.add('active');
-                
+
                 // Add active class to selected tab
                 document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-                
-                // Clear any existing search highlights
-                this.clearSearch();
-                
+
                 // Reset scroll position to top of tab
                 window.scrollTo(0, 0);
-                
-                // Position cursor at first text character in new tab
-                this.positionCursorAtFirstText();
             }
 
-            handleKeyPress(e) {
-                if (this.mode === 'command' || this.mode === 'search') return;
-                
-                // Disable keyboard navigation when sidebar is open to prevent interference
-                if (this.isSidebarMode && this.cursorState === 'sidebar') {
-                    // Only handle Escape key to close sidebar
-                    if (e.key === 'Escape') {
-                        e.preventDefault();
-                        this.closeSidebarAndRestoreCursor();
-                    }
-                    return;
-                }
-                
-                // Handle number prefixes for repeat counts
-                if (e.key >= '0' && e.key <= '9') {
-                    e.preventDefault();
-                    this.repeatCount = this.repeatCount * 10 + parseInt(e.key);
-                    this.showStatus(`Repeat count: ${this.repeatCount}`);
-                    return;
-                }
-                
-                // Get repeat count (default to 1)
-                const count = Math.max(1, this.repeatCount);
-                this.repeatCount = 0; // Reset after use
-                
-                // Handle find mode
-                if (this.findMode) {
-                    if (e.key === 'Escape') {
-                        this.findMode = false;
-                        this.showStatus('Find cancelled');
-                        return;
-                    }
-                    if (e.key.length === 1) {
-                        this.findChar = e.key;
-                        this.lastFindChar = e.key;
-                        this.findMode = false;
-                        this.findNextChar(this.findChar, this.lastFindDirection);
-                        return;
-                    }
-                    return;
-                }
-                
-                // Handle awaiting second 'g' for 'gg' command
-                if (this.awaitingGCommand) {
-                    this.awaitingGCommand = false;
-                    if (e.key === 'g') {
-                        e.preventDefault();
-                        this.scrollToTop();
-                        return;
-                    }
-                    // If not 'g', fall through to handle the key normally
-                }
-                
-                switch(e.key) {
-                    // Basic movement (hjkl)
-                    case 'j':
-                        e.preventDefault();
-                        this.repeatAction(() => this.moveCursorDown(), count);
-                        break;
-                    case 'k':
-                        e.preventDefault();
-                        this.repeatAction(() => this.moveCursorUp(), count);
-                        break;
-                    case 'h':
-                        e.preventDefault();
-                        this.repeatAction(() => this.moveCursorLeft(), count);
-                        break;
-                    case 'l':
-                        e.preventDefault();
-                        this.repeatAction(() => this.moveCursorRight(), count);
-                        break;
-                    
-                    // Word movement
-                    case 'w':
-                        e.preventDefault();
-                        this.repeatAction(() => this.moveToNextWord(), count);
-                        break;
-                    case 'b':
-                        e.preventDefault();
-                        this.repeatAction(() => this.moveToPrevWord(), count);
-                        break;
-                    case 'e':
-                        e.preventDefault();
-                        this.repeatAction(() => this.moveToEndOfWord(), count);
-                        break;
-                    
-                    // Line movement
-                    case '0':
-                        e.preventDefault();
-                        this.moveToLineStart();
-                        break;
-                    case '$':
-                        e.preventDefault();
-                        this.moveToLineEnd();
-                        break;
-                    case '^':
-                        e.preventDefault();
-                        this.moveToFirstNonWhitespace();
-                        break;
-                    
-                    // Page movement
-                    case 'PageDown':
-                        e.preventDefault();
-                        this.pageDown();
-                        break;
-                    case 'PageUp':
-                        e.preventDefault();
-                        this.pageUp();
-                        break;
-                    
-                    // Scrolling
-                    case 'g':
-                        e.preventDefault();
-                        this.awaitingGCommand = true;
-                        this.showStatus('Press g again for top of document');
-                        break;
-                    case 'G':
-                        e.preventDefault();
-                        if (count > 1) {
-                            this.goToLine(count);
-                        } else {
-                            this.scrollToBottom();
-                        }
-                        break;
-                    
-                    // Find character
-                    case 'f':
-                        e.preventDefault();
-                        this.lastFindDirection = 'forward';
-                        this.findMode = true;
-                        this.showStatus('Find character (forward): ');
-                        break;
-                    case 'F':
-                        e.preventDefault();
-                        this.lastFindDirection = 'backward';
-                        this.findMode = true;
-                        this.showStatus('Find character (backward): ');
-                        break;
-                    case ';':
-                        e.preventDefault();
-                        if (this.lastFindChar) {
-                            this.findNextChar(this.lastFindChar, this.lastFindDirection);
-                        }
-                        break;
-                    case ',':
-                        e.preventDefault();
-                        if (this.lastFindChar) {
-                            const oppositeDir = this.lastFindDirection === 'forward' ? 'backward' : 'forward';
-                            this.findNextChar(this.lastFindChar, oppositeDir);
-                        }
-                        break;
-                    
-                    // Scroll commands
-                    case 'u':
-                        if (e.ctrlKey) {
-                            e.preventDefault();
-                            this.scrollUp();
-                        }
-                        break;
-                    case 'd':
-                        if (e.ctrlKey) {
-                            e.preventDefault();
-                            this.scrollDown();
-                        }
-                        break;
-                    
-                    // Search and navigation
-                    case '/':
-                        e.preventDefault();
-                        this.enterSearchMode();
-                        break;
-                    case 'n':
-                        e.preventDefault();
-                        if (this.searchMatches.length > 0) {
-                            this.nextMatch();
-                        } else {
-                            this.nextSection();
-                        }
-                        break;
-                    case 'N':
-                        e.preventDefault();
-                        if (this.searchMatches.length > 0) {
-                            this.prevMatch();
-                        } else {
-                            this.prevSection();
-                        }
-                        break;
-                    case 'p':
-                        e.preventDefault();
-                        this.prevSection();
-                        break;
-                    
-                    // Command mode
-                    case ':':
-                        e.preventDefault();
-                        this.enterCommandMode();
-                        break;
-                    case '?':
-                        e.preventDefault();
-                        this.showHelp();
-                        break;
-                    
-                    // Actions
-                    case 'Enter':
-                        e.preventDefault();
-                        this.handleEnterPress();
-                        break;
-                    case 'Escape':
-                        e.preventDefault();
-                        if (this.cursorState === 'sidebar') {
-                            this.closeSidebarAndRestoreCursor();
-                        } else {
-                            this.exitMode();
-                        }
-                        break;
-                    
-                    // Additional vim-like keys
-                    case 'o':
-                        e.preventDefault();
-                        this.openLinkOrItem();
-                        break;
-                    case 'r':
-                        e.preventDefault();
-                        this.refreshCurrentSection();
-                        break;
-                    case 'H':
-                        e.preventDefault();
-                        this.moveToTop();
-                        break;
-                    case 'M':
-                        e.preventDefault();
-                        this.moveToMiddle();
-                        break;
-                    case 'L':
-                        e.preventDefault();
-                        this.moveToBottom();
-                        break;
-                    case 'x':
-                        e.preventDefault();
-                        this.deleteUnderCursor();
-                        break;
-                    case 'y':
-                        e.preventDefault();
-                        this.copyUnderCursor();
-                        break;
-                }
-            }
-
-            handleCommandInput(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    this.executeCommand(e.target.value);
-                } else if (e.key === 'Escape') {
-                    e.preventDefault();
-                    this.exitMode();
-                }
-            }
-
-            scrollDown() {
-                window.scrollBy(0, this.scrollSpeed);
-            }
-
-            scrollUp() {
-                window.scrollBy(0, -this.scrollSpeed);
-            }
-
-            scrollToTop() {
-                window.scrollTo(0, 0);
-                this.currentSection = 0;
-                this.updateActiveSection();
-            }
-
-            scrollToBottom() {
-                window.scrollTo(0, document.body.scrollHeight);
-                this.currentSection = this.sections.length - 1;
-                this.updateActiveSection();
-            }
-
-            // New navigation methods
-            repeatAction(action, count) {
-                for (let i = 0; i < count; i++) {
-                    action();
-                }
-            }
-
-            moveToNextWord() {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (!activeTab) return;
-                
-                // Simple word movement - move to next space or punctuation
-                const textContent = activeTab.textContent;
-                const currentPos = this.getTextPosition();
-                const nextSpace = textContent.indexOf(' ', currentPos + 1);
-                const nextPunct = textContent.search(/[.!?,:;]/, currentPos + 1);
-                
-                let targetPos = nextSpace;
-                if (nextPunct !== -1 && (nextSpace === -1 || nextPunct < nextSpace)) {
-                    targetPos = nextPunct;
-                }
-                
-                if (targetPos !== -1) {
-                    this.moveToTextPosition(targetPos);
-                } else {
-                    this.moveToLineEnd();
-                }
-            }
-
-            moveToPrevWord() {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (!activeTab) return;
-                
-                const textContent = activeTab.textContent;
-                const currentPos = this.getTextPosition();
-                const prevSpace = textContent.lastIndexOf(' ', currentPos - 1);
-                const prevPunct = textContent.search(/[.!?,:;](?=[^.!?,:;]*$)/, currentPos - 1);
-                
-                let targetPos = prevSpace;
-                if (prevPunct !== -1 && (prevSpace === -1 || prevPunct > prevSpace)) {
-                    targetPos = prevPunct;
-                }
-                
-                if (targetPos !== -1) {
-                    this.moveToTextPosition(targetPos);
-                } else {
-                    this.moveToLineStart();
-                }
-            }
-
-            moveToEndOfWord() {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (!activeTab) return;
-                
-                const textContent = activeTab.textContent;
-                const currentPos = this.getTextPosition();
-                const nextSpace = textContent.indexOf(' ', currentPos + 1);
-                
-                if (nextSpace !== -1) {
-                    this.moveToTextPosition(nextSpace - 1);
-                } else {
-                    this.moveToLineEnd();
-                }
-            }
-
-            moveToLineStart() {
-                this.cursorX = 0;
-                this.updateCursorPosition();
-            }
-
-            moveToLineEnd() {
-                // Find the length of the current line
-                const activeTab = document.querySelector('.tab-content.active');
-                if (!activeTab) return;
-                
-                const lines = activeTab.textContent.split('\n');
-                const currentLine = Math.min(this.cursorY, lines.length - 1);
-                const lineLength = lines[currentLine] ? lines[currentLine].length : 0;
-                
-                this.cursorX = lineLength;
-                this.updateCursorPosition();
-            }
-
-            moveToFirstNonWhitespace() {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (!activeTab) return;
-                
-                const lines = activeTab.textContent.split('\n');
-                const currentLine = Math.min(this.cursorY, lines.length - 1);
-                const lineContent = lines[currentLine] || '';
-                
-                const firstNonWhitespace = lineContent.search(/\S/);
-                this.cursorX = Math.max(0, firstNonWhitespace);
-                this.updateCursorPosition();
-            }
-
-            pageDown() {
-                const viewportHeight = window.innerHeight;
-                const scrollAmount = viewportHeight * 0.8; // 80% of viewport
-                window.scrollBy(0, scrollAmount);
-                this.cursorY += Math.floor(scrollAmount / this.lineHeight);
-                this.updateCursorPosition();
-            }
-
-            pageUp() {
-                const viewportHeight = window.innerHeight;
-                const scrollAmount = viewportHeight * 0.8;
-                window.scrollBy(0, -scrollAmount);
-                this.cursorY -= Math.floor(scrollAmount / this.lineHeight);
-                this.cursorY = Math.max(0, this.cursorY);
-                this.updateCursorPosition();
-            }
-
-            scrollUp() {
-                const scrollAmount = window.innerHeight * 0.5;
-                window.scrollBy(0, -scrollAmount);
-                this.cursorY -= Math.floor(scrollAmount / this.lineHeight);
-                this.cursorY = Math.max(0, this.cursorY);
-                this.updateCursorPosition();
-            }
-
-            scrollDown() {
-                const scrollAmount = window.innerHeight * 0.5;
-                window.scrollBy(0, scrollAmount);
-                this.cursorY += Math.floor(scrollAmount / this.lineHeight);
-                this.updateCursorPosition();
-            }
-
-            goToLine(lineNum) {
-                this.cursorY = lineNum - 1; // Convert to 0-based
-                this.cursorX = 0;
-                this.updateCursorPosition();
-                
-                // Scroll to make line visible
-                const targetScroll = this.cursorY * this.lineHeight;
-                window.scrollTo(0, targetScroll);
-            }
-
-            findNextChar(char, direction) {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (!activeTab) return;
-                
-                const textContent = activeTab.textContent;
-                const currentPos = this.getTextPosition();
-                
-                let targetPos = -1;
-                if (direction === 'forward') {
-                    targetPos = textContent.indexOf(char, currentPos + 1);
-                } else {
-                    targetPos = textContent.lastIndexOf(char, currentPos - 1);
-                }
-                
-                if (targetPos !== -1) {
-                    this.moveToTextPosition(targetPos);
-                    this.showStatus(`Found '${char}' at position ${targetPos}`);
-                } else {
-                    this.showStatus(`'${char}' not found`);
-                }
-            }
-
-            moveToTop() {
-                const viewportTop = window.pageYOffset;
-                const topLineY = Math.floor(viewportTop / this.lineHeight);
-                this.cursorY = topLineY;
-                this.cursorX = 0;
-                this.updateCursorPosition();
-            }
-
-            moveToMiddle() {
-                const viewportTop = window.pageYOffset;
-                const viewportHeight = window.innerHeight;
-                const middleLineY = Math.floor((viewportTop + viewportHeight / 2) / this.lineHeight);
-                this.cursorY = middleLineY;
-                this.cursorX = 0;
-                this.updateCursorPosition();
-            }
-
-            moveToBottom() {
-                const viewportTop = window.pageYOffset;
-                const viewportHeight = window.innerHeight;
-                const bottomLineY = Math.floor((viewportTop + viewportHeight) / this.lineHeight);
-                this.cursorY = bottomLineY;
-                this.cursorX = 0;
-                this.updateCursorPosition();
-            }
-
-            openLinkOrItem() {
-                // Same as Enter key functionality
-                this.handleEnterPress();
-            }
-
-            refreshCurrentSection() {
-                const currentSectionName = this.sections[this.currentSection];
-                this.showStatus(`Refreshing ${currentSectionName} section...`);
-                
-                // Refresh the current section content
-                switch(currentSectionName) {
-                    case 'blog':
-                        this.generateBlogContent();
-                        break;
-                    case 'projects':
-                        this.generateProjectsContent();
-                        break;
-                    case 'books':
-                        this.generateBooksContent();
-                        break;
-                    case 'awesome-links':
-                        this.generateAwesomeLinksContent();
-                        break;
-                    case 'configs':
-                        this.generateConfigsContent();
-                        break;
-                    default:
-                        this.generateAboutContent();
-                }
-            }
-
-            deleteUnderCursor() {
-                // For this website, we'll just show what's under the cursor
-                const element = this.getElementAtCursor();
-                if (element) {
-                    const text = element.textContent.trim();
-                    this.showStatus(`Cannot delete: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
-                }
-            }
-
-            copyUnderCursor() {
-                // Copy text under cursor to clipboard
-                const element = this.getElementAtCursor();
-                if (element) {
-                    const text = element.textContent.trim();
-                    navigator.clipboard.writeText(text).then(() => {
-                        this.showStatus(`Copied: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
-                    }).catch(() => {
-                        this.showStatus('Failed to copy to clipboard');
-                    });
-                }
-            }
-
-            // Helper methods
-            getTextPosition() {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (!activeTab) return 0;
-                
-                const lines = activeTab.textContent.split('\n');
-                let position = 0;
-                
-                for (let i = 0; i < Math.min(this.cursorY, lines.length); i++) {
-                    position += lines[i].length + 1; // +1 for newline
-                }
-                
-                position += Math.min(this.cursorX, lines[this.cursorY]?.length || 0);
-                return position;
-            }
-
-            moveToTextPosition(position) {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (!activeTab) return;
-                
-                const lines = activeTab.textContent.split('\n');
-                let currentPos = 0;
-                let targetY = 0;
-                let targetX = 0;
-                
-                for (let i = 0; i < lines.length; i++) {
-                    const lineLength = lines[i].length + 1; // +1 for newline
-                    
-                    if (currentPos + lineLength > position) {
-                        targetY = i;
-                        targetX = position - currentPos;
-                        break;
-                    }
-                    
-                    currentPos += lineLength;
-                }
-                
-                this.cursorY = targetY;
-                this.cursorX = targetX;
-                this.updateCursorPosition();
-            }
-
-            prevMatch() {
-                if (this.searchMatches.length === 0) return;
-                
-                if (this.currentMatchIndex >= 0) {
-                    this.searchMatches[this.currentMatchIndex].classList.remove('current');
-                }
-                
-                this.currentMatchIndex = (this.currentMatchIndex - 1 + this.searchMatches.length) % this.searchMatches.length;
-                this.highlightCurrentMatch();
-            }
-
-            initializeCursor() {
-                // Position cursor at the first text character
-                this.positionCursorAtFirstText();
-            }
-
-            updateCursorPosition() {
-                if (this.cursorState === 'sidebar') {
-                    this.updateCursorPositionForSidebar();
-                } else {
-                    const container = document.querySelector('.container');
-                    const containerRect = container.getBoundingClientRect();
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    
-                    this.cursor.style.left = (containerRect.left + this.cursorX * this.charWidth) + 'px';
-                    this.cursor.style.top = (containerRect.top + scrollTop + this.cursorY * this.lineHeight) + 'px';
-                    
-                    // Auto-scroll to keep cursor visible
-                    this.ensureCursorVisible();
-                }
-                
-                // Check for hover states after position update
-                setTimeout(() => this.updateCursorHover(), 0);
-            }
-
-            ensureCursorVisible() {
-                const cursorRect = this.cursor.getBoundingClientRect();
-                const viewportHeight = window.innerHeight;
-                const scrollBuffer = 100; // Buffer space in pixels
-                
-                // Check if cursor is below the visible area
-                if (cursorRect.bottom > viewportHeight - scrollBuffer) {
-                    const scrollAmount = cursorRect.bottom - (viewportHeight - scrollBuffer);
-                    window.scrollBy(0, scrollAmount);
-                }
-                
-                // Check if cursor is above the visible area
-                if (cursorRect.top < scrollBuffer) {
-                    const scrollAmount = scrollBuffer - cursorRect.top;
-                    window.scrollBy(0, -scrollAmount);
-                }
-            }
-
-            moveCursorUp() {
-                if (this.cursorState === 'sidebar') {
-                    this.cursorY = Math.max(0, this.cursorY - 1);
-                } else {
-                    this.cursorY = Math.max(0, this.cursorY - 1);
-                }
-                this.updateCursorPosition();
-            }
-
-            moveCursorDown() {
-                if (this.cursorState === 'sidebar') {
-                    // In sidebar, allow unlimited down movement
-                    this.cursorY++;
-                } else {
-                    this.cursorY++;
-                }
-                this.updateCursorPosition();
-            }
-
-            moveCursorLeft() {
-                if (this.cursorState === 'sidebar') {
-                    this.cursorX = Math.max(0, this.cursorX - 1);
-                } else {
-                    this.cursorX = Math.max(0, this.cursorX - 1);
-                }
-                this.updateCursorPosition();
-            }
-
-            moveCursorRight() {
-                if (this.cursorState === 'sidebar') {
-                    this.cursorX++;
-                } else {
-                    this.cursorX++;
-                }
-                this.updateCursorPosition();
-            }
-
-            getElementAtCursor() {
-                const cursorRect = this.cursor.getBoundingClientRect();
-                const centerX = cursorRect.left + cursorRect.width / 2;
-                const centerY = cursorRect.top + cursorRect.height / 2;
-                
-                // Temporarily hide cursor to get element beneath it
-                this.cursor.style.display = 'none';
-                const element = document.elementFromPoint(centerX, centerY);
-                this.cursor.style.display = 'block';
-                
-                return element;
-            }
-
-            isOverLink() {
-                const element = this.getElementAtCursor();
-                return element && (element.tagName === 'A' || element.closest('a'));
-            }
-
-            isOverTab() {
-                const element = this.getElementAtCursor();
-                return element && (element.classList.contains('tab') || element.closest('.tab'));
-            }
-
-            isOverBlogItem() {
-                const element = this.getElementAtCursor();
-                return element && (element.classList.contains('blog-file-item') || element.closest('.blog-file-item'));
-            }
-
-            isOverProjectItem() {
-                const element = this.getElementAtCursor();
-                return element && (element.classList.contains('project-file-item') || element.closest('.project-file-item'));
-            }
-
-            isOverConfigItem() {
-                const element = this.getElementAtCursor();
-                return element && (element.classList.contains('config-file-item') || element.closest('.config-file-item'));
-            }
-
-            getHoveredItem() {
-                const element = this.getElementAtCursor();
-                if (!element) return null;
-
-                // Find the closest file item
-                const blogItem = element.closest('.blog-file-item');
-                const projectItem = element.closest('.project-file-item');
-                const configItem = element.closest('.config-file-item');
-
-                if (blogItem) {
-                    // Find the corresponding blog post
-                    const index = Array.from(blogItem.parentElement.children).indexOf(blogItem);
-                    return { type: 'blog', item: this.blogPosts[index], element: blogItem };
-                }
-                
-                if (projectItem) {
-                    // Find the corresponding project
-                    const index = Array.from(projectItem.parentElement.children).indexOf(projectItem);
-                    return { type: 'project', item: this.projects[index], element: projectItem };
-                }
-                
-                if (configItem) {
-                    // Find the corresponding config
-                    const index = Array.from(configItem.parentElement.children).indexOf(configItem);
-                    return { type: 'config', item: this.configs[index], element: configItem };
-                }
-
-                return null;
-            }
-
-            handleEnterPress() {
-                if (this.cursorState === 'sidebar') {
-                    // In sidebar mode, Enter doesn't do anything (let user read)
-                    return;
-                }
-
-                if (this.isOverLink()) {
-                    this.openLinkAtCursor();
-                } else if (this.isOverTab()) {
-                    this.switchToTabAtCursor();
-                } else {
-                    // Check if over a file item
-                    const hoveredItem = this.getHoveredItem();
-                    if (hoveredItem) {
-                        this.openItemInSidebar(hoveredItem);
-                    }
-                }
-            }
-
-            openItemInSidebar(hoveredItem) {
-                // Save current cursor position
-                this.savedCursorPosition = { x: this.cursorX, y: this.cursorY };
-
-                // Open the appropriate sidebar
-                switch (hoveredItem.type) {
-                    case 'blog':
-                        this.openBlogArticle(hoveredItem.item);
-                        break;
-                    case 'project':
-                        this.openProjectArticle(hoveredItem.item);
-                        break;
-                    case 'config':
-                        this.openConfigFile(hoveredItem.item);
-                        break;
-                }
-
-                // Switch cursor to sidebar mode
-                this.cursorState = 'sidebar';
-                this.moveCursorToSidebar();
-            }
-
-            moveCursorToSidebar() {
-                // Wait for sidebar to be fully rendered
-                setTimeout(() => {
-                    const sidebar = document.getElementById('blogSidebar');
-                    const sidebarContent = document.getElementById('sidebarContent');
-                    
-                    if (sidebar && sidebarContent) {
-                        // Position cursor at start of sidebar content with some padding
-                        this.cursorX = 2; // Small offset from left edge
-                        this.cursorY = 2; // Small offset from top edge
-                        
-                        // Update cursor position relative to sidebar
-                        this.updateCursorPositionForSidebar();
-                    }
-                }, 100);
-            }
-
-            updateCursorPositionForSidebar() {
-                if (this.cursorState !== 'sidebar') return;
-                
-                const sidebar = document.getElementById('blogSidebar');
-                if (!sidebar) return;
-                
-                const sidebarRect = sidebar.getBoundingClientRect();
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                this.cursor.style.left = (sidebarRect.left + this.cursorX * this.charWidth) + 'px';
-                this.cursor.style.top = (sidebarRect.top + scrollTop + this.cursorY * this.lineHeight) + 'px';
-                
-                // Auto-scroll sidebar if needed
-                this.ensureCursorVisibleInSidebar();
-            }
-
-            ensureCursorVisibleInSidebar() {
-                const sidebarContent = document.getElementById('sidebarContent');
-                if (!sidebarContent) return;
-                
-                const cursorRect = this.cursor.getBoundingClientRect();
-                const sidebarRect = sidebarContent.getBoundingClientRect();
-                const scrollBuffer = 50;
-                
-                // Check if cursor is below visible sidebar area
-                if (cursorRect.bottom > sidebarRect.bottom - scrollBuffer) {
-                    const scrollAmount = cursorRect.bottom - (sidebarRect.bottom - scrollBuffer);
-                    sidebarContent.scrollTop += scrollAmount;
-                }
-                
-                // Check if cursor is above visible sidebar area
-                if (cursorRect.top < sidebarRect.top + scrollBuffer) {
-                    const scrollAmount = (sidebarRect.top + scrollBuffer) - cursorRect.top;
-                    sidebarContent.scrollTop -= scrollAmount;
-                }
-            }
-
-            openLinkAtCursor() {
-                const element = this.getElementAtCursor();
-                const link = element.tagName === 'A' ? element : element.closest('a');
-                if (link && link.href) {
-                    window.open(link.href, '_blank');
-                    this.showStatus(`Opened link: ${link.href}`);
-                }
-            }
-
-            switchToTabAtCursor() {
-                const element = this.getElementAtCursor();
-                const tab = element.classList.contains('tab') ? element : element.closest('.tab');
-                if (tab && tab.dataset.tab) {
-                    this.showTab(tab.dataset.tab);
-                    this.showStatus(`Switched to tab: ${tab.dataset.tab}`);
-                }
-            }
-
-            updateCursorHover() {
-                // Clear previous hover states
-                this.cursor.classList.remove('cursor-hover-link', 'cursor-hover-tab', 'cursor-hover-file');
-                
-                if (this.cursorState === 'sidebar') {
-                    this.showStatus('SIDEBAR MODE | Use j/k to navigate, Esc to return to main content');
-                    return;
-                }
-                
-                if (this.isOverLink()) {
-                    this.cursor.classList.add('cursor-hover-link');
-                    const element = this.getElementAtCursor();
-                    const link = element.tagName === 'A' ? element : element.closest('a');
-                    const linkText = link.textContent.trim();
-                    this.showStatus(`Link: "${linkText}" - Press Enter to open in new tab`);
-                } else if (this.isOverTab()) {
-                    this.cursor.classList.add('cursor-hover-tab');
-                    const element = this.getElementAtCursor();
-                    const tab = element.classList.contains('tab') ? element : element.closest('.tab');
-                    const tabName = tab.textContent.trim();
-                    this.showStatus(`Tab: "${tabName}" - Press Enter to switch`);
-                } else {
-                    // Check if over a file item
-                    const hoveredItem = this.getHoveredItem();
-                    if (hoveredItem) {
-                        this.cursor.classList.add('cursor-hover-file');
-                        const itemType = hoveredItem.type.charAt(0).toUpperCase() + hoveredItem.type.slice(1);
-                        this.showStatus(`${itemType}: "${hoveredItem.item.title}" - Press Enter to open in sidebar`);
-                    } else {
-                        // Clear status if not over interactive element
-                        this.showStatus('NORMAL MODE | Press ? for help');
-                    }
-                }
-            }
-
-            findFirstTextPosition() {
-                const activeTab = document.querySelector('.tab-content.active');
-                if (!activeTab) return { x: 0, y: 0 };
-
-                // Find the first text node in the active tab
-                const walker = document.createTreeWalker(
-                    activeTab,
-                    NodeFilter.SHOW_TEXT,
-                    {
-                        acceptNode: function(node) {
-                            // Skip empty text nodes and whitespace-only nodes
-                            if (node.nodeValue.trim().length === 0) {
-                                return NodeFilter.FILTER_SKIP;
-                            }
-                            return NodeFilter.FILTER_ACCEPT;
-                        }
-                    },
-                    false
-                );
-
-                const firstTextNode = walker.nextNode();
-                if (!firstTextNode) return { x: 0, y: 0 };
-
-                // Get the position of the first character
-                const range = document.createRange();
-                range.setStart(firstTextNode, 0);
-                range.setEnd(firstTextNode, 1);
-                const rect = range.getBoundingClientRect();
-                
-                const container = document.querySelector('.container');
-                const containerRect = container.getBoundingClientRect();
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-                // Calculate relative position within the container
-                const relativeX = Math.max(0, Math.floor((rect.left - containerRect.left) / this.charWidth));
-                const relativeY = Math.max(0, Math.floor((rect.top - containerRect.top - scrollTop) / this.lineHeight));
-
-                return { x: relativeX, y: relativeY };
-            }
-
-            positionCursorAtFirstText() {
-                const position = this.findFirstTextPosition();
-                this.cursorX = position.x;
-                this.cursorY = position.y;
-                this.updateCursorPosition();
-            }
-
-            nextSection() {
-                this.currentSection = (this.currentSection + 1) % this.sections.length;
-                this.showTab(this.sections[this.currentSection]);
-            }
-
-            prevSection() {
-                this.currentSection = (this.currentSection - 1 + this.sections.length) % this.sections.length;
-                this.showTab(this.sections[this.currentSection]);
-            }
-
-            scrollToSection(index) {
-                // Not needed for tabs - using showTab instead
-                this.showTab(this.sections[index]);
-            }
-
-            enterSearchMode() {
-                this.mode = 'search';
-                this.cursor.style.display = 'none';
-                this.showCommandLine();
-                document.getElementById('commandInput').placeholder = 'Search...';
-                document.getElementById('commandInput').focus();
-                this.showStatus('SEARCH MODE | Type to search, Enter to find, Esc to exit');
-            }
-
-            enterCommandMode() {
-                this.mode = 'command';
-                this.cursor.style.display = 'none';
-                this.showCommandLine();
-                document.getElementById('commandInput').placeholder = 'Enter command';
-                document.getElementById('commandInput').focus();
-                this.showStatus('COMMAND MODE | Type command, Enter to execute, Esc to exit');
-            }
-
-            executeCommand(command) {
-                const cmd = command.trim().toLowerCase();
-                
-                if (this.mode === 'search') {
-                    this.search(cmd);
-                    return;
-                }
-                
-                switch(cmd) {
-                    case 'about':
-                    case 'a':
-                        this.goToSection('about');
-                        break;
-                    case 'blog':
-                    case 'b':
-                        this.goToSection('blog');
-                        break;
-                    case 'books':
-                    case 'bk':
-                        this.goToSection('books');
-                        break;
-                    case 'awesome-links':
-                    case 'links':
-                    case 'l':
-                        this.goToSection('awesome-links');
-                        break;
-                    case 'configs':
-                    case 'c':
-                        this.goToSection('configs');
-                        break;
-                    case 'projects':
-                    case 'p':
-                        this.goToSection('projects');
-                        break;
-                    case 'help':
-                    case 'h':
-                        this.showHelp();
-                        break;
-                    case 'top':
-                        this.scrollToTop();
-                        break;
-                    case 'bottom':
-                        this.scrollToBottom();
-                        break;
-                    default:
-                        this.showStatus(`Unknown command: ${command}`);
-                }
-                
-                this.exitMode();
-            }
-
-            goToSection(sectionName) {
-                const index = this.sections.indexOf(sectionName);
-                if (index !== -1) {
-                    this.currentSection = index;
-                    this.showTab(sectionName);
-                }
-            }
-
-            search(term) {
-                if (!term || !term.trim()) {
-                    this.searchTerm = '';
-                    this.clearSearch();
-                    this.exitMode();
-                    return;
-                }
-
-                this.clearSearch(); // Clear previous search
-                this.searchTerm = term;
-                const activeTab = document.querySelector('.tab-content.active');
-                const regex = new RegExp(this.escapeRegex(term), 'gi');
-
-                const walkAndReplace = (node) => {
-                    if (node.nodeType === Node.TEXT_NODE) {
-                        const text = node.textContent;
-                        const matches = [...text.matchAll(regex)];
-                        if (matches.length > 0) {
-                            const fragment = document.createDocumentFragment();
-                            let lastIndex = 0;
-                            matches.forEach(match => {
-                                if (match.index > lastIndex) {
-                                    fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
-                                }
-                                const highlightSpan = document.createElement('span');
-                                highlightSpan.className = 'search-highlight';
-                                highlightSpan.textContent = match[0];
-                                fragment.appendChild(highlightSpan);
-                                lastIndex = match.index + match[0].length;
-                            });
-                            if (lastIndex < text.length) {
-                                fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
-                            }
-                            node.parentNode.replaceChild(fragment, node);
-                        }
-                    } else if (node.nodeType === Node.ELEMENT_NODE) {
-                        // Process child nodes
-                        const children = [...node.childNodes];
-                        children.forEach(child => walkAndReplace(child));
-                    }
-                };
-
-                walkAndReplace(activeTab);
-                this.searchMatches = [...activeTab.querySelectorAll('.search-highlight')];
-
-                if (this.searchMatches.length > 0) {
-                    this.showStatus(`${this.searchMatches.length} matches found for: "${term}"`);
-                    this.currentMatchIndex = -1;
-                    this.nextMatch(); // Go to first match
-                } else {
-                    this.showStatus(`No matches found for: "${term}"`);
-                }
-                
-                this.exitMode();
-            }
-
-            clearSearch() {
-                const highlights = document.querySelectorAll('.search-highlight');
-                highlights.forEach(el => {
-                    const parent = el.parentNode;
-                    if (parent) {
-                        parent.replaceChild(document.createTextNode(el.textContent), el);
-                        parent.normalize();
-                    }
-                });
-                this.searchMatches = [];
-                this.currentMatchIndex = -1;
-            }
-
-            nextMatch() {
-                if (this.searchMatches.length === 0) return;
-
-                if (this.currentMatchIndex >= 0) {
-                    this.searchMatches[this.currentMatchIndex].classList.remove('current');
-                }
-                this.currentMatchIndex = (this.currentMatchIndex + 1) % this.searchMatches.length;
-                this.highlightCurrentMatch();
-            }
-
-            highlightCurrentMatch() {
-                if (this.currentMatchIndex >= 0 && this.currentMatchIndex < this.searchMatches.length) {
-                    const currentMatch = this.searchMatches[this.currentMatchIndex];
-                    currentMatch.classList.add('current');
-                    currentMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    this.showStatus(`Match ${this.currentMatchIndex + 1} of ${this.searchMatches.length}`);
-                }
-            }
-
-            escapeRegex(string) {
-                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            }
-
-            showHelp() {
-                const helpText = `Navigation: hjkl (move) | wbe (word) | 0$^ (line) | gg/G (top/bottom) | HML (screen) | 
-Page: PageUp/PageDown | Ctrl+u/d (scroll) | f/F (find char) | ;/, (repeat find) | 
-Search: / (search) | n/N (next/prev match) | 
-Tabs: np (prev/next tab) | 
-Actions: Enter (open) | o (open) | r (refresh) | xy (copy) | 
-Numbers: 5j (repeat) | 15G (go to line) | 
-Mode: : (command) | Esc (exit/return) | ? (help)`;
-                this.showStatus(helpText);
-            }
-
-            exitMode() {
-                this.mode = 'normal';
-                this.cursor.style.display = 'block';
-                this.hideCommandLine();
-                this.updateCursorHover();
-            }
-
-            showCommandLine() {
-                document.getElementById('commandLine').classList.add('active');
-                document.getElementById('commandInput').value = '';
-            }
-
-            hideCommandLine() {
-                document.getElementById('commandLine').classList.remove('active');
-            }
-
-            showStatus(message) {
-                const statusBar = document.getElementById('statusBar');
-                statusBar.textContent = message;
-                statusBar.classList.add('active');
-                
-                // Auto-hide after 3 seconds
-                setTimeout(() => {
-                    if (statusBar.textContent === message) {
-                        statusBar.classList.remove('active');
-                    }
-                }, 3000);
-            }
-
-            throttle(func, limit) {
-                let inThrottle;
-                return function() {
-                    const args = arguments;
-                    const context = this;
-                    if (!inThrottle) {
-                        func.apply(context, args);
-                        inThrottle = true;
-                        setTimeout(() => inThrottle = false, limit);
-                    }
-                }
-            }
         }
 
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => new VimSite());
+            document.addEventListener('DOMContentLoaded', () => new Website());
         } else {
-            new VimSite();
+            new Website();
         }
     </script>
 </body>
