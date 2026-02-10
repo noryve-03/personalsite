@@ -42,21 +42,45 @@
             padding: 2rem;
         }
 
-        .header {
+        /* Hero Section with Particle Canvas */
+        .hero {
+            position: relative;
             margin-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 1rem;
         }
 
-        .header h1 {
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @media (max-width: 768px) {
+            #particle-canvas {
+                display: none;
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
             color: var(--accent-green);
             font-size: 2rem;
             margin-bottom: 0.5rem;
         }
 
-        .header .subtitle {
+        .hero .tagline {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
         }
 
         .navbar {
@@ -140,7 +164,6 @@
             color: #00ff00;
         }
 
-
         .highlight {
             background: #333;
             padding: 2px 4px;
@@ -157,13 +180,95 @@
             text-decoration: underline;
         }
 
+        /* Burundi hover map */
+        .burundi-trigger {
+            cursor: pointer;
+            color: var(--accent-cyan);
+            border-bottom: 1px dashed var(--accent-cyan);
+        }
+
+        .burundi-map {
+            position: absolute;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 0.75rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            line-height: 0;
+        }
+
+        .burundi-map.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Affiliations */
+        .affiliations {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .affiliation-group {
+            margin-bottom: 1rem;
+        }
+
+        .affiliation-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .affiliation-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.5rem;
+        }
+
+        .affiliation-links a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        .affiliation-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Contact Section */
+        .contact {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
 
         @media (max-width: 600px) {
             .container {
                 padding: 1rem;
             }
-        }
 
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero .tagline {
+                font-size: 1rem;
+            }
+
+            .affiliation-links {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+        }
 
         .blog-sidebar {
             position: fixed;
@@ -228,8 +333,8 @@
             color: #c0c0c0;
             font-family: 'Courier New', monospace;
             line-height: 1.6;
-            max-height: calc(100vh - 120px); /* Ensure it doesn't exceed viewport */
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            max-height: calc(100vh - 120px);
+            -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
         }
 
@@ -266,7 +371,6 @@
             background-color: var(--border-color);
         }
 
-        /* Maintain backward compatibility */
         .blog-file-item,
         .project-file-item {
             cursor: pointer;
@@ -358,7 +462,7 @@
                 width: 100%;
                 right: -100%;
             }
-            
+
             .container.sidebar-open {
                 margin-right: 0;
                 display: none;
@@ -368,9 +472,13 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Noryve Freeman</h1>
-            <div class="subtitle">I build things and love configs</div>
+        <!-- Hero Section with Particle Canvas -->
+        <div class="hero">
+            <canvas id="particle-canvas"></canvas>
+            <div class="hero-content">
+                <h1>Noryve Freeman</h1>
+                <div class="tagline">Builder. Technologist. Optimist.</div>
+            </div>
         </div>
 
         <div class="navbar">
@@ -379,6 +487,7 @@
             <div class="tab" data-tab="books">Books</div>
             <div class="tab" data-tab="awesome-links">Awesome Links</div>
             <div class="tab" data-tab="projects">Projects</div>
+            <div class="tab" data-tab="fun-facts">Fun Facts</div>
         </div>
 
         <div class="tab-content active" id="about">
@@ -386,6 +495,45 @@
                 <h2>About</h2>
                 <div id="about-content">
                     <!-- Content will be generated by JavaScript -->
+                </div>
+
+                <!-- Affiliations Section -->
+                <div class="affiliations">
+                    <div class="affiliation-group">
+                        <div class="affiliation-label">Fellowships:</div>
+                        <div class="affiliation-links">
+                            <a href="https://neo.com" target="_blank">Neo</a>
+                            <a href="https://www.zfellows.com" target="_blank">Z-Fellows</a>
+                            <a href="https://hillhousefellows.com" target="_blank">Hillhouse Fellows</a>
+                        </div>
+                    </div>
+
+                    <div class="affiliation-group">
+                        <div class="affiliation-label">Worked for:</div>
+                        <div class="affiliation-links">
+                            <a href="https://nvidia.com" target="_blank">NVIDIA</a>
+                            <a href="https://google.com" target="_blank">Google</a>
+                            <a href="https://fedoraproject.org" target="_blank">Fedora OS</a>
+                        </div>
+                    </div>
+
+                    <div class="affiliation-group">
+                        <div class="affiliation-label">Contracted for:</div>
+                        <div class="affiliation-links">
+                            <a href="https://endeavor.org" target="_blank">Endeavor</a>
+                            <a href="https://cohere.com" target="_blank">Cohere AI</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Section -->
+                <div class="contact">
+                    <h3>Contact</h3>
+                    <p>Open to chat about anything.</p>
+                    <div class="contact-info">
+                        <div><a href="mailto:freemanirabaruta@gmail.com" class="link">freemanirabaruta@gmail.com</a></div>
+                        <div><a href="tel:475-287-9371" class="link">475-287-9371</a></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -419,13 +567,29 @@
             </div>
         </div>
 
-
         <div class="tab-content" id="projects">
             <div class="section">
                 <h2>Projects</h2>
                 <p>My personal projects and contributions:</p>
                 <ul id="projects-content">
                     <!-- Content will be generated by JavaScript -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content" id="fun-facts">
+            <div class="section">
+                <h2>Fun Facts</h2>
+                <ul>
+                    <li>Backpacked solo around East Africa reading Thoreau, Emerson, and other transcendentalists</li>
+                    <li>Chief Whip in the <a href="https://ypu.yale.edu/" class="link" target="_blank">Yale Political Union</a></li>
+                    <li>Co-led a <a href="https://yaledailynews.com/blog/2025/10/14/forty-yalies-set-to-walk-from-yale-to-new-york-city-over-fall-break/" class="link" target="_blank">77-mile walk from New Haven to NYC</a> — 40 started, 12 finished</li>
+                    <li>Wrote a fantasy novel that went nowhere</li>
+                    <li>Built a blockbuster board game as a teenager</li>
+                    <li>Visited 5 colleges in 5 days, crashing in strangers' dorms</li>
+                    <li>Built a decentralized cloud GPU company — scaled to 200k GPUs, 40k listings, 5 industry partners</li>
+                    <li>Built a digital marketing agency with my older brother, one of the largest in Burundi</li>
+                    <li>Want to build a Gigawatt datacenter in Africa — and still plan to</li>
                 </ul>
             </div>
         </div>
@@ -446,23 +610,158 @@
     </div>
 
     <script>
+        // Particle System for Hero Background
+        class ParticleSystem {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.mouse = { x: null, y: null };
+                this.particleCount = this.isMobile() ? 50 : 100;
+                this.maxDistance = 120;
+
+                // Defer first resize to ensure the hero has laid out
+                requestAnimationFrame(() => {
+                    this.resize();
+                    this.init();
+                    this.animate();
+                });
+
+                window.addEventListener('resize', () => this.resize());
+                this.canvas.parentElement.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.canvas.parentElement.addEventListener('mouseleave', () => this.handleMouseLeave());
+            }
+
+            isMobile() {
+                return window.innerWidth <= 768;
+            }
+
+            resize() {
+                const rect = this.canvas.parentElement.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+            }
+
+            init() {
+                this.particles = [];
+                for (let i = 0; i < this.particleCount; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.width,
+                        y: Math.random() * this.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        radius: Math.random() * 1.5 + 0.5
+                    });
+                }
+            }
+
+            handleMouseMove(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                this.mouse.x = e.clientX - rect.left;
+                this.mouse.y = e.clientY - rect.top;
+            }
+
+            handleMouseLeave() {
+                this.mouse.x = null;
+                this.mouse.y = null;
+            }
+
+            update() {
+                this.particles.forEach(p => {
+                    // Apply mouse repulsion
+                    if (this.mouse.x !== null && !this.isMobile()) {
+                        const dx = p.x - this.mouse.x;
+                        const dy = p.y - this.mouse.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 100 && dist > 0) {
+                            const force = (100 - dist) / 100;
+                            p.vx += (dx / dist) * force * 0.3;
+                            p.vy += (dy / dist) * force * 0.3;
+                        }
+                    }
+
+                    // Update position
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    // Light friction
+                    p.vx *= 0.998;
+                    p.vy *= 0.998;
+
+                    // Keep particles drifting — nudge if too slow
+                    const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                    if (speed < 0.2) {
+                        const angle = Math.random() * Math.PI * 2;
+                        p.vx += Math.cos(angle) * 0.08;
+                        p.vy += Math.sin(angle) * 0.08;
+                    }
+
+                    // Bounce off edges
+                    if (p.x < 0 || p.x > this.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > this.height) p.vy *= -1;
+
+                    // Keep within bounds
+                    p.x = Math.max(0, Math.min(this.width, p.x));
+                    p.y = Math.max(0, Math.min(this.height, p.y));
+                });
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+
+                // Draw connections
+                this.ctx.lineWidth = 0.5;
+
+                for (let i = 0; i < this.particles.length; i++) {
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const dx = this.particles[i].x - this.particles[j].x;
+                        const dy = this.particles[i].y - this.particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < this.maxDistance) {
+                            const opacity = (1 - dist / this.maxDistance) * 0.06;
+                            this.ctx.strokeStyle = `rgba(0, 255, 255, ${opacity})`;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+                            this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+                            this.ctx.stroke();
+                        }
+                    }
+                }
+
+                // Draw particles
+                this.ctx.fillStyle = 'rgba(0, 255, 255, 0.15)';
+                this.particles.forEach(p => {
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                });
+            }
+
+            animate() {
+                this.update();
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
         // Website functionality
         class Website {
             constructor() {
-                this.sections = ['about', 'blog', 'books', 'awesome-links', 'projects'];
+                this.sections = ['about', 'blog', 'books', 'awesome-links', 'projects', 'fun-facts'];
                 this.currentSection = 0;
 
-                // Data loaded from pages.json
                 this.pagesData = null;
                 this.books = null;
                 this.awesomeLinks = null;
 
-                // Blog configuration
                 this.blogPosts = [];
                 this.blogIndexUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/index.txt";
                 this.blogBaseUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/";
 
-                // Projects configuration
                 this.projects = [];
                 this.projectsUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/projects/projects.json";
                 this.projectsBaseUrl = "https://raw.githubusercontent.com/noryve-03/blog/master/projects/";
@@ -471,6 +770,12 @@
                 this.loadPagesData().then(() => {
                     this.init();
                 });
+
+                // Initialize particle system (desktop only)
+                if (window.innerWidth > 768) {
+                    const canvas = document.getElementById('particle-canvas');
+                    if (canvas) new ParticleSystem(canvas);
+                }
             }
 
             async loadPagesData() {
@@ -480,14 +785,12 @@
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     this.pagesData = await response.json();
-                    
-                    // Set references to data sections
+
                     this.books = this.pagesData.books;
                     this.awesomeLinks = this.pagesData.awesomeLinks;
-                    
+
                 } catch (error) {
                     console.error('Error loading pages data:', error);
-                    // Set fallback data
                     this.books = { read2025: [], currentlyReading: [] };
                     this.awesomeLinks = { categories: {} };
                 }
@@ -501,7 +804,6 @@
                 this.generateProjectsContent();
             }
 
-            // Utility functions for cleaner code
             createElement(tag, className = '', innerHTML = '') {
                 const element = document.createElement(tag);
                 if (className) element.className = className;
@@ -533,26 +835,90 @@
 
             generateAboutContent() {
                 const aboutContainer = document.getElementById('about-content');
-                if (this.pagesData && this.pagesData.about) {
-                    aboutContainer.innerHTML = this.pagesData.about.content;
-                } else {
-                    aboutContainer.innerHTML = '<p>Loading about content...</p>';
-                }
+
+                const content = `
+                    <p>I am a student at <a href="https://www.yale.edu" class="link" target="_blank">Yale University</a>, studying Computer Science and Energy studies. I believe in <a href="https://www.lesswrong.com/posts/Wg6ptgi2DupFuAnXG/orienting-toward-wizard-power" class="link"> "orienting towards wizard power," </a> <a href="https://paulgraham.com/identity.html" class="link"> "keeping my identity small,"</a> and <a href="https://www.benkuhn.net/abyss/" class="link"> "staring into the abyss as a core life skill."</a></p>
+
+                    <p>Born and raised in <span class="burundi-trigger" id="burundi-trigger">Burundi</span>.</p>
+
+                    <p>I learned to code at 12 on pen and paper, got my first laptop at 14, and was working with the likes of Google at 15. I'm interested in improving the world through capitalism — currently doing that through robotics. I also read a lot and care deeply about building robust computer systems.</p>
+
+                    <p>My contact is at the end of the page -- reach out.</p>
+                `;
+
+                aboutContainer.innerHTML = content;
+                this.setupBurundiMap();
+            }
+
+            setupBurundiMap() {
+                const trigger = document.getElementById('burundi-trigger');
+                if (!trigger) return;
+
+                // Create tooltip div with inline Africa SVG
+                const tooltip = document.createElement('div');
+                tooltip.className = 'burundi-map';
+                tooltip.innerHTML = `<svg viewBox="-2 8 468 488" width="210" height="220" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M79,40 L105,28 L145,22 L184,20 L220,32 L250,50 L290,55 L315,58 L335,67 L342,80 L350,98 L358,125 L370,142 L385,155 L410,162 L448,170 L438,185 L420,210 L405,240 L385,268 L378,285 L382,300 L388,318 L380,345 L365,375 L342,405 L322,430 L298,455 L270,473 L250,480 L235,475 L225,465 L218,445 L210,418 L200,388 L195,360 L188,330 L192,310 L198,295 L190,272 L182,258 L178,248 L180,232 L178,220 L168,210 L150,202 L130,208 L112,214 L92,213 L72,210 L52,205 L35,192 L25,180 L12,162 L3,150 L8,132 L7,112 L12,90 L22,72 L35,58 L55,46 Z"
+                          fill="#2a2a2a" stroke="#555" stroke-width="1.5"/>
+                    <path d="M440,327 L450,340 L453,360 L448,385 L440,405 L430,416 L420,408 L410,388 L407,362 L412,342 L422,330 Z"
+                          fill="#2a2a2a" stroke="#555" stroke-width="1"/>
+                    <circle cx="335" cy="287" r="18" fill="#00ffff" opacity="0.05"/>
+                    <circle cx="335" cy="287" r="10" fill="#00ffff" opacity="0.12"/>
+                    <circle cx="335" cy="287" r="4.5" fill="#00ffff" opacity="0.7"/>
+                    <line x1="335" y1="287" x2="375" y2="308" stroke="#00ffff" stroke-width="0.5" opacity="0.4"/>
+                    <text x="378" y="313" fill="#00ffff" font-size="14" font-family="Courier New, monospace" opacity="0.85">Burundi</text>
+                </svg>`;
+                document.body.appendChild(tooltip);
+
+                const showTooltip = () => {
+                    const rect = trigger.getBoundingClientRect();
+                    tooltip.style.left = (rect.left + rect.width / 2 - 117) + 'px';
+                    tooltip.style.top = (rect.top - 248 + window.scrollY) + 'px';
+                    // If tooltip would go above viewport, show below
+                    if (rect.top - 248 < 0) {
+                        tooltip.style.top = (rect.bottom + 8 + window.scrollY) + 'px';
+                    }
+                    tooltip.classList.add('visible');
+                };
+
+                const hideTooltip = () => {
+                    tooltip.classList.remove('visible');
+                };
+
+                // Desktop: hover
+                trigger.addEventListener('mouseenter', showTooltip);
+                trigger.addEventListener('mouseleave', hideTooltip);
+
+                // Mobile: tap
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (tooltip.classList.contains('visible')) {
+                        hideTooltip();
+                    } else {
+                        showTooltip();
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!trigger.contains(e.target) && !tooltip.contains(e.target)) {
+                        hideTooltip();
+                    }
+                });
             }
 
             async generateBlogContent() {
                 const blogContainer = document.getElementById('blog-content');
                 this.showLoadingState('blog-content', 'Loading blog posts...');
-                
+
                 try {
                     await this.loadBlogIndex();
                     blogContainer.innerHTML = '';
-                    
+
                     if (this.blogPosts.length === 0) {
                         blogContainer.innerHTML = '<p>No blog posts found.</p>';
                         return;
                     }
-                    
+
                     const ul = this.createElement('ul');
                     this.blogPosts.forEach(post => {
                         const li = this.createElement('li', 'blog-file-item');
@@ -561,7 +927,7 @@
                         ul.appendChild(li);
                     });
                     blogContainer.appendChild(ul);
-                    
+
                 } catch (error) {
                     this.showErrorState('blog-content', 'Error loading blog posts. Please try again later.');
                     console.error('Error loading blog:', error);
@@ -575,10 +941,10 @@
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const indexText = await response.text();
-                    
+
                     this.blogPosts = [];
                     const lines = indexText.trim().split('\n');
-                    
+
                     lines.forEach(line => {
                         if (line.trim()) {
                             const filename = line.trim();
@@ -592,7 +958,6 @@
                     });
                 } catch (error) {
                     console.error('Error loading blog index:', error);
-                    // Fallback to sample data
                     this.blogPosts = [
                         { title: "Welcome", filename: "welcome.md", url: this.blogBaseUrl + "welcome.md" }
                     ];
@@ -602,25 +967,19 @@
             async openBlogArticle(post) {
                 this.currentBlogArticle = post;
 
-                // Update URL for direct linking
                 const blogUrl = `${window.location.origin}${window.location.pathname}?blog=${encodeURIComponent(post.filename)}`;
                 window.history.pushState({}, '', blogUrl);
 
-                // Update sidebar title
                 document.getElementById('sidebarTitle').textContent = post.title;
-
-                // Show loading state
                 document.getElementById('sidebarContent').innerHTML = '<p>Loading article...</p>';
 
-                // Show sidebar
                 document.getElementById('blogSidebar').classList.add('active');
                 document.querySelector('.container').classList.add('sidebar-open');
 
-                // Ensure sidebar content is scrollable with mouse
                 const sidebarContent = document.getElementById('sidebarContent');
                 if (sidebarContent) {
                     sidebarContent.style.overflowY = 'auto';
-                    sidebarContent.scrollTop = 0; // Reset scroll position
+                    sidebarContent.scrollTop = 0;
                 }
 
                 try {
@@ -630,7 +989,6 @@
                     }
                     const markdown = await response.text();
 
-                    // Convert markdown to HTML (basic conversion)
                     const html = this.markdownToHtml(markdown);
                     document.getElementById('sidebarContent').innerHTML = html;
 
@@ -641,9 +999,7 @@
             }
 
             markdownToHtml(markdown) {
-                // Use Marked.js for proper markdown parsing
                 try {
-                    // Configure marked for security and features
                     marked.setOptions({
                         breaks: true,
                         gfm: true,
@@ -651,45 +1007,40 @@
                         smartLists: true,
                         smartypants: true
                     });
-                    
-                    // Use marked to parse markdown
+
                     return marked.parse(markdown);
                 } catch (error) {
                     console.error('Error parsing markdown:', error);
-                    // Fallback to plain text if parsing fails
                     return `<pre>${markdown}</pre>`;
                 }
             }
 
-
             generateBooksContent() {
                 const booksContainer = document.getElementById('books-content');
                 booksContainer.innerHTML = '';
-                
+
                 if (!this.books) {
                     booksContainer.innerHTML = '<p>Loading books...</p>';
                     return;
                 }
-                
-                // Books read in 2025
+
                 const read2025Section = this.createElement('div', '', '<p>Books I read in 2025</p>');
                 const read2025List = this.createElement('ul');
-                
+
                 this.books.read2025.forEach(book => {
                     read2025List.appendChild(this.createLinkItem(book));
                 });
-                
+
                 read2025Section.appendChild(read2025List);
                 booksContainer.appendChild(read2025Section);
-                
-                // Currently reading
+
                 const currentlyReadingSection = this.createElement('div', '', '<p>Currently reading or not finished:</p>');
                 const currentlyReadingList = this.createElement('ul');
-                
+
                 this.books.currentlyReading.forEach(book => {
                     currentlyReadingList.appendChild(this.createLinkItem(book));
                 });
-                
+
                 currentlyReadingSection.appendChild(currentlyReadingList);
                 booksContainer.appendChild(currentlyReadingSection);
             }
@@ -697,40 +1048,38 @@
             generateAwesomeLinksContent() {
                 const awesomeLinksContainer = document.getElementById('awesome-links-content');
                 awesomeLinksContainer.innerHTML = '';
-                
+
                 if (!this.awesomeLinks || !this.awesomeLinks.categories) {
                     awesomeLinksContainer.innerHTML = '<p>Loading awesome links...</p>';
                     return;
                 }
-                
-                // Generate sections dynamically from categories
+
                 Object.entries(this.awesomeLinks.categories).forEach(([key, category]) => {
                     const section = this.createElement('div', '', `<h3>${category.title}</h3>`);
                     const list = this.createElement('ul');
-                    
+
                     category.links.forEach(link => {
                         list.appendChild(this.createLinkItem(link));
                     });
-                    
+
                     section.appendChild(list);
                     awesomeLinksContainer.appendChild(section);
                 });
             }
 
-
             async generateProjectsContent() {
                 const projectsContainer = document.getElementById('projects-content');
                 this.showLoadingState('projects-content', 'Loading projects...');
-                
+
                 try {
                     await this.loadProjects();
                     projectsContainer.innerHTML = '';
-                    
+
                     if (this.projects.length === 0) {
                         projectsContainer.innerHTML = '<p>No projects found.</p>';
                         return;
                     }
-                    
+
                     const ul = this.createElement('ul');
                     this.projects.forEach(project => {
                         const li = this.createElement('li', 'project-file-item');
@@ -740,7 +1089,7 @@
                         ul.appendChild(li);
                     });
                     projectsContainer.appendChild(ul);
-                    
+
                 } catch (error) {
                     this.showErrorState('projects-content', 'Error loading projects. Please try again later.');
                     console.error('Error loading projects:', error);
@@ -754,9 +1103,9 @@
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const projectsData = await response.json();
-                    
+
                     this.projects = [];
-                    
+
                     Object.entries(projectsData).forEach(([key, project]) => {
                         this.projects.push({
                             title: key,
@@ -775,25 +1124,19 @@
             async openProjectArticle(project) {
                 this.currentBlogArticle = project;
 
-                // Update URL for direct linking
                 const projectUrl = `${window.location.origin}${window.location.pathname}?project=${encodeURIComponent(project.filename)}`;
                 window.history.pushState({}, '', projectUrl);
 
-                // Update sidebar title
                 document.getElementById('sidebarTitle').textContent = project.title;
-
-                // Show loading state
                 document.getElementById('sidebarContent').innerHTML = '<p>Loading project...</p>';
 
-                // Show sidebar
                 document.getElementById('blogSidebar').classList.add('active');
                 document.querySelector('.container').classList.add('sidebar-open');
 
-                // Ensure sidebar content is scrollable with mouse
                 const sidebarContent = document.getElementById('sidebarContent');
                 if (sidebarContent) {
                     sidebarContent.style.overflowY = 'auto';
-                    sidebarContent.scrollTop = 0; // Reset scroll position
+                    sidebarContent.scrollTop = 0;
                 }
 
                 try {
@@ -803,7 +1146,6 @@
                     }
                     const markdown = await response.text();
 
-                    // Convert markdown to HTML
                     const html = this.markdownToHtml(markdown);
                     document.getElementById('sidebarContent').innerHTML = html;
 
@@ -838,11 +1180,9 @@
                     this.openFullscreen();
                 });
 
-                // Close sidebar when clicking outside
                 document.addEventListener('click', (e) => {
                     const sidebar = document.getElementById('blogSidebar');
                     if (sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
-                        // Don't close if clicking on blog file items or project file items
                         if (!e.target.closest('.blog-file-item') && !e.target.closest('.project-file-item')) {
                             this.closeSidebar();
                         }
@@ -855,7 +1195,6 @@
                 document.querySelector('.container').classList.remove('sidebar-open');
                 this.currentBlogArticle = null;
 
-                // Update URL to remove blog article
                 window.history.pushState({}, '', window.location.pathname);
             }
 
@@ -870,9 +1209,8 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const blogParam = urlParams.get('blog');
                 const projectParam = urlParams.get('project');
-                
+
                 if (blogParam) {
-                    // Load blog in fullscreen mode
                     this.loadBlogIndex().then(() => {
                         const post = this.blogPosts.find(p => p.filename === blogParam);
                         if (post) {
@@ -881,9 +1219,8 @@
                         }
                     });
                 }
-                
+
                 if (projectParam) {
-                    // Load project in fullscreen mode
                     this.loadProjects().then(() => {
                         const project = this.projects.find(p => p.filename === projectParam);
                         if (project) {
@@ -896,18 +1233,17 @@
 
             async openBlogFullscreen(post) {
                 this.currentBlogArticle = post;
-                
-                // Replace blog content with fullscreen article
+
                 const blogContainer = document.getElementById('blog-content');
                 blogContainer.innerHTML = '<p>Loading article...</p>';
-                
+
                 try {
                     const response = await fetch(post.url);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const markdown = await response.text();
-                    
+
                     const html = this.markdownToHtml(markdown);
                     blogContainer.innerHTML = `
                         <div class="fullscreen-article">
@@ -920,7 +1256,7 @@
                             </div>
                         </div>
                     `;
-                    
+
                 } catch (error) {
                     blogContainer.innerHTML = '<p>Error loading article. Please try again later.</p>';
                     console.error('Error loading article:', error);
@@ -929,18 +1265,17 @@
 
             async openProjectFullscreen(project) {
                 this.currentBlogArticle = project;
-                
-                // Replace projects content with fullscreen article
+
                 const projectsContainer = document.getElementById('projects-content');
                 projectsContainer.innerHTML = '<p>Loading project...</p>';
-                
+
                 try {
                     const response = await fetch(project.url);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const markdown = await response.text();
-                    
+
                     const html = this.markdownToHtml(markdown);
                     projectsContainer.innerHTML = `
                         <div class="fullscreen-article">
@@ -953,7 +1288,7 @@
                             </div>
                         </div>
                     `;
-                    
+
                 } catch (error) {
                     projectsContainer.innerHTML = '<p>Error loading project. Please try again later.</p>';
                     console.error('Error loading project:', error);
@@ -961,29 +1296,22 @@
             }
 
             showTab(tabName) {
-                // Update current section index
                 this.currentSection = this.sections.indexOf(tabName);
 
-                // Hide all tab contents
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.classList.remove('active');
                 });
 
-                // Remove active class from all tabs
                 document.querySelectorAll('.tab').forEach(tab => {
                     tab.classList.remove('active');
                 });
 
-                // Show selected tab content
                 document.getElementById(tabName).classList.add('active');
 
-                // Add active class to selected tab
                 document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
 
-                // Reset scroll position to top of tab
                 window.scrollTo(0, 0);
             }
-
         }
 
         // Initialize when DOM is ready
